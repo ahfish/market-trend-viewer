@@ -1,0 +1,16 @@
+.CandleStick {
+    text-align: center;
+  }
+  
+
+.CandleStick-header {
+    background-color: #1a1f25;
+
+    /* min-height: 100vh; */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: calc(10px + 2vmin);
+    color: rgb(95, 75, 75);
+  }

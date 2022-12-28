@@ -1,0 +1,20 @@
+h1, p {
+    font-family: Lato;
+  }
+
+
+.CandleStick {
+    text-align: center;
+  }
+  
+
+.CandleStick-header {
+    background-color: #d9dce0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: calc(10px + 2vmin);
+    color: rgb(49, 107, 59);
+  }
