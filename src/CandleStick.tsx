@@ -27,6 +27,8 @@ const opts: ApexCharts.ApexOptions = {
               }
         },
         yaxis: {
+            tickAmount: 10,
+             max: 172,
             tooltip: {
                 enabled: true
             },
@@ -76,7 +78,7 @@ class CandleStick extends React.Component {
             <div className="CandleStick">
                 <header className="CandleStick-header">
                 <div id="chart">
-                    <ReactApexChart options={opts} series={series} height={350} width={1500} />
+                    <ReactApexChart options={opts} series={series} height={1000} width={2800} />
                 </div>
                 <div id="html-dist"></div>
                 </header>

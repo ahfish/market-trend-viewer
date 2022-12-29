@@ -10,8 +10,6 @@ function App() {
     <div className="App">
       <header className="App-header">
       <CandleStick></CandleStick>
-      <br/>
-      <CandleStick></CandleStick>
       </header>
     </div>
   );
