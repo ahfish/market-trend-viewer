@@ -7,11 +7,11 @@ import CandleStick from "./CandleStick";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
+    // <div className="App">
+    //   <header className="App-header">
       <CandleStick></CandleStick>
-      </header>
-    </div>
+    //   </header>
+    // </div>
   );
 }
 

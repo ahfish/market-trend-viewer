@@ -7,7 +7,12 @@ import series from './CabdkeStickData';
 
 const opts: ApexCharts.ApexOptions = {
         chart: {
-            type: 'candlestick'
+            type: 'candlestick',
+            // width: 1000,
+            zoom: {
+              enabled: true,
+              type: 'xy'
+            }
         },
         title: {
             text: 'CandleStick Chart',
@@ -72,13 +77,12 @@ class CandleStick extends React.Component {
     }
 
 
-
     render() {
         return (
             <div className="CandleStick">
                 <header className="CandleStick-header">
                 <div id="chart">
-                    <ReactApexChart options={opts} series={series} height={1000} width={2800} />
+                    <ReactApexChart options={opts} series={series} height={820} width={1900} />
                 </div>
                 <div id="html-dist"></div>
                 </header>
