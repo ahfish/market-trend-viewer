@@ -6,6 +6,11 @@ import series from './CabdkeStickData';
 
 
 const opts: ApexCharts.ApexOptions = {
+        plotOptions: {
+          bar: {
+            columnWidth: '20%',
+          }
+        },
         chart: {
             type: 'candlestick',
             // width: 1000,
@@ -23,12 +28,16 @@ const opts: ApexCharts.ApexOptions = {
           },
         xaxis: {
             type: 'datetime',
+            // type: "numeric",
+            tickAmount: 'dataPoints',
             labels: {
                 show: true,
                 style: {
                   colors: 'white',
                   fontSize: '12px'
-                },
+                }
+                // formatter: function (value) {
+                //   return "";
               }
         },
         yaxis: {
