@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { render } from 'react-dom';
 import ReactApexChart from 'react-apexcharts'
 import './CandleStick.css'
-import series from './CabdkeStickData';
+import series from './CandleStickData_first_level';
 
 
 const opts: ApexCharts.ApexOptions = {
@@ -55,6 +55,9 @@ const opts: ApexCharts.ApexOptions = {
               }            
         },
         tooltip: {
+            x: {
+              format: 'yyyy-MM-dd HH:mm:ss'
+            },
             shared: true,
             custom: [function({seriesIndex, dataPointIndex, w}) {
               return w.globals.series[seriesIndex][dataPointIndex]
