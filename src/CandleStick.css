@@ -1,12 +1,14 @@
 .CandleStick {
     text-align: center;
+    min-height: 80vh;
+    min-width: 100%;
   }
   
 
 .CandleStick-header {
     background-color: #1a1f25;
-
-    min-height: 100vh;
+    min-width: 100%;
+    min-height: 80vh;
     display: flex;
     flex-direction: column;
     align-items: center;
