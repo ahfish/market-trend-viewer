@@ -22,7 +22,7 @@ import Dropdown from 'react-bootstrap/Dropdown'
 import 'bootstrap/dist/css/bootstrap.min.css';  
 
 function App() {
-  const [value,setValue]=useState("Series1");
+  const [value,setValue]=useState("Series0");
   const handleSelect=(eventKey: any, event: Object)=>{
     console.log(eventKey);
     setValue(eventKey)
