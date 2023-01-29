@@ -40,10 +40,10 @@ function App() {
               <Dropdown.Item eventKey="Series3">Series 2</Dropdown.Item>
               <Dropdown.Item eventKey="Series4">Series 3</Dropdown.Item>
               <Dropdown.Item eventKey="Series4">Series 4</Dropdown.Item>
-              <Dropdown.Item eventKey="Series4">Series 5</Dropdown.Item>
-              <Dropdown.Item eventKey="Series4">Series 6</Dropdown.Item>
-              <Dropdown.Item eventKey="Series4">Series 7</Dropdown.Item>
-              <Dropdown.Item eventKey="Series4">Series 8</Dropdown.Item>
+              <Dropdown.Item eventKey="Series5">Series 5</Dropdown.Item>
+              <Dropdown.Item eventKey="Series6">Series 6</Dropdown.Item>
+              <Dropdown.Item eventKey="Series7">Series 7</Dropdown.Item>
+              <Dropdown.Item eventKey="Series8">Series 8</Dropdown.Item>
       </DropdownButton>
       <header className="App-header">
           { value == "Series0" && <CandleStick series={series1} title="Series0"></CandleStick> }
