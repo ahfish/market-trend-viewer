@@ -57,7 +57,7 @@ function App() {
           { value == "Series6" && <CandleStick series={series6} title="Series6"></CandleStick> }
           { value == "Series7" && <CandleStick series={series7} title="Series7"></CandleStick> }
           { value == "Series8" && <CandleStick series={series8} title="Series8"></CandleStick> }
-          { value == "Series8" && <CandleStick series={series9} title="Series9"></CandleStick> }
+          { value == "Series9" && <CandleStick series={series9} title="Series9"></CandleStick> }
        </header>
     </div>
     // <div className="App">
