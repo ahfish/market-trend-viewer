@@ -10,7 +10,8 @@ import series from './CandleStickData_2';
 
 export interface CandleStickProp {
   series : ApexAxisChartSeries,
-  title : string
+  title : string,
+  width? : number | number[]
 }
 
 
@@ -41,7 +42,7 @@ export class CandleStick extends React.Component<CandleStickProp> {
               align: 'left'
           },
           stroke: {
-              width: [3, 1]
+              width: props.width ?? [2,1]
             },
           xaxis: {
               type: 'datetime',
@@ -57,7 +58,8 @@ export class CandleStick extends React.Component<CandleStickProp> {
                   //   return "";
                 }
           },
-          yaxis: {
+          yaxis: 
+            {
               tickAmount: 10,
                max: 172,
               tooltip: {
@@ -70,7 +72,8 @@ export class CandleStick extends React.Component<CandleStickProp> {
                     fontSize: '12px'
                   },
                 }            
-          },
+          }
+          ,
           tooltip: {
               x: {
                 format: 'yyyy-MM-dd HH:mm:ss'

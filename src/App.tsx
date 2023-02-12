@@ -16,6 +16,7 @@ import series6 from './CandleStickData_6';
 import series7 from './CandleStickData_7';
 import series8 from './CandleStickData_8';
 import series9 from './CandleStickData_9';
+import series_2level_0 from './CandleStickData_2level_0';
 import { CandleStick, CandleStickProp } from "./CandleStick";
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown'
@@ -46,6 +47,7 @@ function App() {
               <Dropdown.Item eventKey="Series7">Series 7</Dropdown.Item>
               <Dropdown.Item eventKey="Series8">Series 8</Dropdown.Item>
               <Dropdown.Item eventKey="Series9">Series 9</Dropdown.Item>
+              <Dropdown.Item eventKey="Series2Level0">Series 2level 0</Dropdown.Item>
       </DropdownButton>
       <header className="App-header">
           { value == "Series0" && <CandleStick series={series0} title="Series0"></CandleStick> }
@@ -58,6 +60,7 @@ function App() {
           { value == "Series7" && <CandleStick series={series7} title="Series7"></CandleStick> }
           { value == "Series8" && <CandleStick series={series8} title="Series8"></CandleStick> }
           { value == "Series9" && <CandleStick series={series9} title="Series9"></CandleStick> }
+          { value == "Series2Level0" && <CandleStick series={series_2level_0} width={[2,2,2]} title="Series 2Level 0"></CandleStick> }
        </header>
     </div>
     // <div className="App">

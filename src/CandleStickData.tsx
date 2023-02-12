@@ -1,6 +1,13 @@
 
 const series : ApexAxisChartSeries = [ 
     {
+        name: 'line2',
+        type: 'line',
+        data: [
+            {x : new Date(1664738100000), y: 161.37},
+            {x : new Date(1664739900000), y: 161.37}
+        ]},
+    {
     name: 'line',
     type: 'line',
     data: [
