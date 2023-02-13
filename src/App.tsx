@@ -17,6 +17,15 @@ import series7 from './CandleStickData_7';
 import series8 from './CandleStickData_8';
 import series9 from './CandleStickData_9';
 import series_2level_0 from './CandleStickData_2level_0';
+import series_2level_1 from './CandleStickData_2level_1';
+import series_2level_2 from './CandleStickData_2level_2';
+import series_2level_3 from './CandleStickData_2level_3';
+import series_2level_4 from './CandleStickData_2level_4';
+import series_2level_5 from './CandleStickData_2level_5';
+import series_2level_6 from './CandleStickData_2level_6';
+import series_2level_7 from './CandleStickData_2level_7';
+import series_2level_8 from './CandleStickData_2level_8';
+import series_2level_9 from './CandleStickData_2level_9';
 import { CandleStick, CandleStickProp } from "./CandleStick";
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown'
@@ -48,6 +57,15 @@ function App() {
               <Dropdown.Item eventKey="Series8">Series 8</Dropdown.Item>
               <Dropdown.Item eventKey="Series9">Series 9</Dropdown.Item>
               <Dropdown.Item eventKey="Series2Level0">Series 2level 0</Dropdown.Item>
+              <Dropdown.Item eventKey="Series2Level1">Series 2level 1</Dropdown.Item>
+              <Dropdown.Item eventKey="Series2Level2">Series 2level 2</Dropdown.Item>
+              <Dropdown.Item eventKey="Series2Level3">Series 2level 3</Dropdown.Item>
+              <Dropdown.Item eventKey="Series2Level4">Series 2level 4</Dropdown.Item>
+              <Dropdown.Item eventKey="Series2Level5">Series 2level 5</Dropdown.Item>
+              <Dropdown.Item eventKey="Series2Level6">Series 2level 6</Dropdown.Item>
+              <Dropdown.Item eventKey="Series2Level7">Series 2level 7</Dropdown.Item>
+              <Dropdown.Item eventKey="Series2Level8">Series 2level 8</Dropdown.Item>
+              <Dropdown.Item eventKey="Series2Level9">Series 2level 9</Dropdown.Item>
       </DropdownButton>
       <header className="App-header">
           { value == "Series0" && <CandleStick series={series0} title="Series0"></CandleStick> }
@@ -61,6 +79,15 @@ function App() {
           { value == "Series8" && <CandleStick series={series8} title="Series8"></CandleStick> }
           { value == "Series9" && <CandleStick series={series9} title="Series9"></CandleStick> }
           { value == "Series2Level0" && <CandleStick series={series_2level_0} width={[2,2,2]} title="Series 2Level 0"></CandleStick> }
+          { value == "Series2Level0" && <CandleStick series={series_2level_1} width={[2,2,2]} title="Series 2Level 1"></CandleStick> }
+          { value == "Series2Level0" && <CandleStick series={series_2level_2} width={[2,2,2]} title="Series 2Level 2"></CandleStick> }
+          { value == "Series2Level0" && <CandleStick series={series_2level_3} width={[2,2,2]} title="Series 2Level 3"></CandleStick> }
+          { value == "Series2Level0" && <CandleStick series={series_2level_4} width={[2,2,2]} title="Series 2Level 4"></CandleStick> }
+          { value == "Series2Level0" && <CandleStick series={series_2level_5} width={[2,2,2]} title="Series 2Level 5"></CandleStick> }
+          { value == "Series2Level0" && <CandleStick series={series_2level_6} width={[2,2,2]} title="Series 2Level 6"></CandleStick> }
+          { value == "Series2Level0" && <CandleStick series={series_2level_7} width={[2,2,2]} title="Series 2Level 7"></CandleStick> }
+          { value == "Series2Level0" && <CandleStick series={series_2level_8} width={[2,2,2]} title="Series 2Level 8"></CandleStick> }
+          { value == "Series2Level0" && <CandleStick series={series_2level_9} width={[2,2,2]} title="Series 2Level 9"></CandleStick> }
        </header>
     </div>
     // <div className="App">
