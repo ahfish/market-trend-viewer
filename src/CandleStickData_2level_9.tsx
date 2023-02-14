@@ -1,4 +1,4 @@
-const series_level2_9 : ApexAxisChartSeries = [ 
+const series_2level_9 : ApexAxisChartSeries = [ 
 {
     name: 'line1',
     type: 'line',
@@ -14214,4 +14214,4 @@ data: [
 {x : new Date("2023-02-10T21:45:00Z"), y: [158.43,158.55,158.39,158.45]}
     ]
 }]
-export default series_level2_9;
+export default series_2level_9;
