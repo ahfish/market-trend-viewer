@@ -1,9 +1,15 @@
 // import React from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { Component } from "react";
 import {useState} from 'react';
 import logo from './logo.svg';
 import './App.css';
-
+import Form from 'react-bootstrap/Form';
+import InputGroup from 'react-bootstrap/InputGroup';
+import Stack from 'react-bootstrap/Stack';
+import Button from 'react-bootstrap/Button';
+import FormControl from "react-bootstrap/FormControl";
+import DropDownSearch from './DropDownSearch';
 
 import Line from "./Line";
 // import series0 from './CandleStickData_0';
@@ -31,15 +37,27 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown'
 import 'bootstrap/dist/css/bootstrap.min.css';  
 
+
 function App() {
-  const [value,setValue]=useState("Series2Level0");
+  const [value,setValue]=useState<string>("Series2Level0");
   const handleSelect=(eventKey: any, event: Object)=>{
     console.log(eventKey);
     setValue(eventKey)
   }
 
+
+
   return (
     <div className="App">
+      <Stack direction="horizontal" gap={3}>
+        <Button as="a" variant="primary">
+          Button as link
+        </Button>
+        <Button as="a" variant="success">
+          Button as link
+        </Button>
+        <DropDownSearch/>
+      </Stack>
       <DropdownButton
       title="Select Series"
       id="dropdown-menu-align-right"
