@@ -12,6 +12,8 @@ import Button from 'react-bootstrap/Button';
 import FormControl from "react-bootstrap/FormControl";
 import DropDownSearch from './DropDownSearch';
 import DatePicker from 'react-datepicker';
+import "react-datepicker/dist/react-datepicker.css";
+
 
 import Line from "./Line";
 // import series0 from './CandleStickData_0';
@@ -42,52 +44,69 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
   const [value,setValue]=useState<string>("Series2Level0");
+  const [from,setFrom]=useState<Date>();
   const handleSelect=(eventKey: any, event: Object)=>{
     console.log(eventKey);
     setValue(eventKey)
   }
 
+  const handleFrom=(eventKey: any, event: React.SyntheticEvent<any>)=>{
+    console.log(eventKey);
+    setFrom(eventKey)
+  }
+
+  const handleSubmit=(e: React.FormEvent)=>{
+    console.log(e);
+    // setFrom(eventKey)
+  }
 
 
   return (
     <div className="App">
-      <Form>
+      {/* <DatePicker onChange={handleFrom} dateFormat="dd-mm-yyyy"/> */}
+      <Form >
         <Stack direction="horizontal" gap={5}>
-        <InputGroup size="sm" className="mb-1">
-            <InputGroup.Text id="basic-addon1">Trend Analysis</InputGroup.Text>
-            <Form.Control placeholder="Symbol" aria-label="Symbol" 
-              aria-describedby="basic-addon1"
-            />
-            <DatePicker onChange={}/>
-            <Form.Select aria-label="Interval">
-              <option value="ONE_MINUTE">ONE_MINUTE</option>
-              <option value="THREE_MINUTE">THREE_MINUTE</option>
-              <option value="FIVE_MINUTE">FIVE_MINUTE</option>
-              <option value="FIFTEEN_MINUTE">FIFTEEN_MINUTE</option>
-              <option value="THIRTY_MINUTE">THIRTY_MINUTE</option>
-              <option value="ONE_HOUR">ONE_HOUR</option>
-              <option value="DAY">DAY</option>
-              <option value="WEEK">WEEK</option>
-            </Form.Select>
+          <InputGroup size="sm" className="mb-1">
+              <InputGroup.Text id="basic-addon1">Trend Analysis</InputGroup.Text>
+              <Form.Control placeholder="Symbol" aria-label="Symbol" 
+                aria-describedby="basic-addon1"
+              />
+              <Form.Control placeholder="From" aria-label="From" 
+                aria-describedby="basic-addon1"
+              />
+              <Form.Control placeholder="To" aria-label="To" 
+                aria-describedby="basic-addon1"
+              />
+              
+              <Form.Select aria-label="Interval">
+                <option value="ONE_MINUTE">ONE_MINUTE</option>
+                <option value="THREE_MINUTE">THREE_MINUTE</option>
+                <option value="FIVE_MINUTE">FIVE_MINUTE</option>
+                <option value="FIFTEEN_MINUTE">FIFTEEN_MINUTE</option>
+                <option value="THIRTY_MINUTE">THIRTY_MINUTE</option>
+                <option value="ONE_HOUR">ONE_HOUR</option>
+                <option value="DAY">DAY</option>
+                <option value="WEEK">WEEK</option>
+              </Form.Select>
 
-          <Form.Select aria-label="Level">
-              <option value="10">10</option>
-              <option value="20">20</option>
-              <option value="30">30</option>
-              <option value="40">40</option>
-              <option value="50">50</option>
-              <option value="60">60</option>
-              <option value="70">70</option>
-              <option value="80">80</option>
-              <option value="90">90</option>
-              <option value="95">95</option>
-              <option value="99">99</option>
-            </Form.Select>
-            <Button variant="outline-secondary" id="button-addon1">
-              Send
-            </Button>
-        </InputGroup>          
-          <DropDownSearch/>
+            <Form.Select aria-label="Level">
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="30">30</option>
+                <option value="40">40</option>
+                <option value="50">50</option>
+                <option value="60">60</option>
+                <option value="70">70</option>
+                <option value="80">80</option>
+                <option value="90">90</option>
+                <option value="95">95</option>
+                <option value="99">99</option>
+              </Form.Select>
+              <Button variant="outline-secondary" id="button-addon1" onClick={handleSubmit}>
+                Send
+              </Button>
+          </InputGroup>          
+          {/* <DropDownSearch/> */}
         </Stack>
       </Form>
 
