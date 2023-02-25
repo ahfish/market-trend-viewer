@@ -42,7 +42,52 @@ import Dropdown from 'react-bootstrap/Dropdown'
 import 'bootstrap/dist/css/bootstrap.min.css';  
 
 
+export interface MarketData {
+  id : number,
+  intervalMin : number,
+  code : string,
+  high: number,
+  low: number,
+  close: number,
+  open: number,
+  time: Date
+}
+
+export interface Trend {
+  direction : string,
+  intervalMin : number,
+  code : string,
+  rule : string | undefined,
+  start: Date
+  end: Date
+  lastMarketPrice : MarketData
+  firstMarketPrice : MarketData
+  trends : Array<Trend> | undefined
+}
+
+
+export interface SeriesRawData {
+  allMarketData : Array<MarketData> | undefined
+  firstLevelTrend : Array<Trend> | undefined
+  secondLevelTrend : Array<Trend> | undefined
+}
+
+export interface LineData {
+  x : any;
+  y : any;
+}
+
+
+export interface LineCandleStick {
+  x : any;
+  y : Array<number>;
+}
+
+
+
+
 function App() {  
+  let [seriesRawData,setSeriesRawData]=useState<SeriesRawData>();
   const [series,setSeries]=useState<any>();
   const [value,setValue]=useState<string>("Series2Level0");
   const [from,setFrom]=useState<Date>();
@@ -82,24 +127,77 @@ function App() {
     console.log(event.currentTarget.value)
     setSymbol(event.currentTarget.value)
   }  
+
+
   
   const useHandleSubmit=(e: React.FormEvent)=>{
     setValue("")
     console.log(e);
     console.log(from);
-    axios.get("http://127.0.0.1:8081/trend/analyse/GBPJPY/on/DAY/from/2022-12-01/to/2023-01-01/with/95", {
+    axios.get<SeriesRawData>("http://127.0.0.1:8081/trend/analyse/GBPJPY/on/DAY/from/2022-12-01/to/2023-01-01/with/95", {
       headers : {
         'Access-Control-Allow-Origin': true,
         'accept': 'application/json'
       }
     })
     .then( response => {
-      console.log(response)
-      setValue("Series2Level1")
-      setSeries(series_2level_0)
+      // console.log(response)
+      setSeriesRawData(response.data)
+      seriesRawData = response.data
+      // response.data.allMarketData?.forEach ( item => {
+      //   console.log(item.time)
+      // })
+      // console.log(response.data.allMarketData)
+      // seriesRawData
+      console.log(seriesRawData)
+      let series : ApexAxisChartSeries = toApexAxisChartSeries(seriesRawData)??[]
+       setValue("Series2Level1")
+       setSeries(series)
     })
 
     // setFrom(eventKey)s
+  }
+
+  const toLineData = ( raw : Array<Trend> | undefined ) : LineData[] => {
+      let result : Array<LineData>  = raw?.map( trend => {
+        if ( trend.direction == "BEARISH" ) 
+          return { x : trend.start, y : trend.firstMarketPrice.high }
+        else 
+        return { x : trend.start, y : trend.firstMarketPrice.low }
+      })?? []
+      return result;
+  }
+
+  const toLineCandleStick = ( raw : Array<MarketData> | undefined) : LineCandleStick[] => {
+    let result : Array<LineData>  = raw?.map( marketData => {
+      return { 
+        x : marketData.time,
+        y : [marketData.open, marketData.high, marketData.low, marketData.close] 
+      }
+    })?? []
+    return result
+
+  }
+
+
+  const toApexAxisChartSeries = (raw : SeriesRawData) : ApexAxisChartSeries | undefined=> {
+    const result : ApexAxisChartSeries = [ 
+      {
+          name: 'line1',
+          type: 'line',
+          data: toLineData(raw.firstLevelTrend)
+      },
+      {
+        name: 'line2',
+        type: 'line',
+        data: toLineData(raw.secondLevelTrend)
+      },
+      { 
+        name: 'candle',
+        type: 'candlestick',
+        data: toLineCandleStick(raw.allMarketData)
+      }]
+      return result
   }
 
 
