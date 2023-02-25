@@ -1,7 +1,6 @@
 // import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import React, { Component } from "react";
-import {useState} from 'react';
+import React, { Component, useState, useEffect } from "react";
 import logo from './logo.svg';
 import './App.css';
 import Form from 'react-bootstrap/Form';
@@ -13,6 +12,7 @@ import FormControl from "react-bootstrap/FormControl";
 import DropDownSearch from './DropDownSearch';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
+import axios from 'axios';
 
 
 import Line from "./Line";
@@ -26,7 +26,7 @@ import Line from "./Line";
 // import series7 from './CandleStickData_7';
 // import series8 from './CandleStickData_8';
 // import series9 from './CandleStickData_9';
-// import series_2level_0 from './CandleStickData_2level_0';
+ import series_2level_0 from './CandleStickData_2level_0';
 // import series_2level_1 from './CandleStickData_2level_1';
 // import series_2level_2 from './CandleStickData_2level_2';
 // import series_2level_3 from './CandleStickData_2level_3';
@@ -42,54 +42,108 @@ import Dropdown from 'react-bootstrap/Dropdown'
 import 'bootstrap/dist/css/bootstrap.min.css';  
 
 
-function App() {
+function App() {  
+  const [series,setSeries]=useState<any>();
   const [value,setValue]=useState<string>("Series2Level0");
   const [from,setFrom]=useState<Date>();
+  const [to,setTo]=useState<Date>(new Date());
+  const [resolution,setResolution]=useState<string>("FIVE_MINUTE");
+  const [symbol,setSymbol]=useState<string>("GBPJPY");
+  const [level,setLevel]=useState<string>("90");
   const handleSelect=(eventKey: any, event: Object)=>{
     console.log(eventKey);
     setValue(eventKey)
   }
 
   const handleFrom=(eventKey: any, event: React.SyntheticEvent<any>)=>{
-    console.log(eventKey);
+    // console.log(eventKey);
     setFrom(eventKey)
   }
 
-  const handleSubmit=(e: React.FormEvent)=>{
-    console.log(e);
-    // setFrom(eventKey)
+  const handleTo=(eventKey: any, event: React.SyntheticEvent<any>)=>{
+    // console.log(eventKey);
+    setTo(eventKey)
   }
+
+  const handleResolution=(event: React.SyntheticEvent<any>)=>{
+    // console.log(eventKey);
+    console.log(event.currentTarget.value)
+    setResolution(event.currentTarget.value)
+  }
+  
+  const handleLevel=(event: React.SyntheticEvent<any>)=>{
+    // console.log(eventKey);
+    console.log(event.currentTarget.value)
+    setLevel(event.currentTarget.value)
+  }
+
+  const handleSymbol=(event: React.SyntheticEvent<any>)=>{
+    // console.log(eventKey);
+    console.log(event.currentTarget.value)
+    setSymbol(event.currentTarget.value)
+  }  
+  
+  const useHandleSubmit=(e: React.FormEvent)=>{
+    setValue("")
+    console.log(e);
+    console.log(from);
+    axios.get("http://127.0.0.1:8081/trend/analyse/GBPJPY/on/DAY/from/2022-12-01/to/2023-01-01/with/95", {
+      headers : {
+        'Access-Control-Allow-Origin': true,
+        'accept': 'application/json'
+      }
+    })
+    .then( response => {
+      console.log(response)
+      setValue("Series2Level1")
+      setSeries(series_2level_0)
+    })
+
+    // setFrom(eventKey)s
+  }
+
+
+  let series0 : ApexAxisChartSeries = []
 
 
   return (
     <div className="App">
-      {/* <DatePicker onChange={handleFrom} dateFormat="dd-mm-yyyy"/> */}
+      
       <Form >
         <Stack direction="horizontal" gap={5}>
           <InputGroup size="sm" className="mb-1">
               <InputGroup.Text id="basic-addon1">Trend Analysis</InputGroup.Text>
-              <Form.Control placeholder="Symbol" aria-label="Symbol" 
+              <Form.Control placeholder="Symbol" aria-label="Symbol" onBlur={handleSymbol} value={symbol}
+                aria-describedby="basic-addon1"
+              />    
+              <InputGroup.Text id="basic-addon1">From</InputGroup.Text>
+              <div>
+                <DatePicker onChange={handleFrom} selected={from}  dateFormat="yyyy-MM-dd" aria-describedby="basic-addon1" />
+              </div>
+              <InputGroup.Text id="basic-addon1">To</InputGroup.Text>
+              <div>
+                <DatePicker onChange={handleTo} selected={to}  dateFormat="yyyy-MM-dd"  />
+              </div>
+              {/* <Form.Control type="date" placeholder="yyyy/mm/dd" aria-label="From"  
                 aria-describedby="basic-addon1"
               />
-              <Form.Control placeholder="From" aria-label="From" 
+              <Form.Control type="date"  placeholder="yyyy-MM-dd" aria-label="To" 
                 aria-describedby="basic-addon1"
-              />
-              <Form.Control placeholder="To" aria-label="To" 
-                aria-describedby="basic-addon1"
-              />
+              /> */}
               
-              <Form.Select aria-label="Interval">
+              <InputGroup.Text >Interval</InputGroup.Text>
+              <Form.Select aria-label="Interval" onChange={handleResolution}>
                 <option value="ONE_MINUTE">ONE_MINUTE</option>
                 <option value="THREE_MINUTE">THREE_MINUTE</option>
                 <option value="FIVE_MINUTE">FIVE_MINUTE</option>
-                <option value="FIFTEEN_MINUTE">FIFTEEN_MINUTE</option>
+                <option value="FIFTEEN_MINUTE" selected>FIFTEEN_MINUTE</option>
                 <option value="THIRTY_MINUTE">THIRTY_MINUTE</option>
-                <option value="ONE_HOUR">ONE_HOUR</option>
+                <option value="O  NE_HOUR">ONE_HOUR</option>
                 <option value="DAY">DAY</option>
                 <option value="WEEK">WEEK</option>
               </Form.Select>
-
-            <Form.Select aria-label="Level">
+              <InputGroup.Text>Level</InputGroup.Text>
+            <Form.Select aria-label="Level" onChange={handleLevel}>
                 <option value="10">10</option>
                 <option value="20">20</option>
                 <option value="30">30</option>
@@ -98,18 +152,20 @@ function App() {
                 <option value="60">60</option>
                 <option value="70">70</option>
                 <option value="80">80</option>
-                <option value="90">90</option>
+                <option value="90" selected>90</option>
                 <option value="95">95</option>
                 <option value="99">99</option>
               </Form.Select>
-              <Button variant="outline-secondary" id="button-addon1" onClick={handleSubmit}>
+              <Button variant="outline-secondary" id="button-addon1" onClick={useHandleSubmit}>
                 Send
               </Button>
           </InputGroup>          
           {/* <DropDownSearch/> */}
         </Stack>
       </Form>
-
+      <header className="App-header">
+      { value == "Series2Level1" && <CandleStick series={series} width={[2,2,1]} title="Series 2Level 20%"></CandleStick> }
+      </header>
       {/* <DropdownButton
       title="Select Series"
       id="dropdown-menu-align-right"
@@ -128,7 +184,7 @@ function App() {
               <Dropdown.Item eventKey="Series2Level9">Series 2level 9</Dropdown.Item>
       </DropdownButton>
       <header className="App-header">
-          { value == "Series2Level0" && <CandleStick series={series_2level_0} width={[2,2,1]} title="Series 2Level 10%"></CandleStick> }
+          { value == "Series2Level0" && <CandleStick series={ } width={[2,2,1]} title="Series 2Level 10%"></CandleStick> }
           { value == "Series2Level1" && <CandleStick series={series_2level_1} width={[2,2,1]} title="Series 2Level 20%"></CandleStick> }
           { value == "Series2Level2" && <CandleStick series={series_2level_2} width={[2,2,1]} title="Series 2Level 30%"></CandleStick> }
           { value == "Series2Level3" && <CandleStick series={series_2level_3} width={[2,2,1]} title="Series 2Level 40%"></CandleStick> }
