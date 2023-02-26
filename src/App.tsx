@@ -1,4 +1,5 @@
 // import React from 'react';
+import Alert from 'react-bootstrap/Alert';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { Component, useState, useEffect } from "react";
 import logo from './logo.svg';
@@ -83,18 +84,32 @@ export interface LineCandleStick {
   y : Array<number>;
 }
 
+declare global {
+  export interface Date {
+    toYYYMMDD() : string
+  }
+}
+Date.prototype.toYYYMMDD = function(): string {  
+  const year = this.getFullYear()
+  const month = String(this.getMonth() + 1).padStart(2, '0')
+  const day = String(this.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+ }   
 
-
+ 
 
 function App() {  
   let [seriesRawData,setSeriesRawData]=useState<SeriesRawData>();
   const [series,setSeries]=useState<any>();
+  const [loading,setLoading]=useState<boolean>(false);
+  const [title,setTitle]=useState<string>("");
   const [value,setValue]=useState<string>("Series2Level0");
   const [from,setFrom]=useState<Date>();
   const [to,setTo]=useState<Date>(new Date());
   const [resolution,setResolution]=useState<string>("FIVE_MINUTE");
   const [symbol,setSymbol]=useState<string>("GBPJPY");
   const [level,setLevel]=useState<string>("90");
+  const [message,setMessage]=useState<string>("");
   const handleSelect=(eventKey: any, event: Object)=>{
     console.log(eventKey);
     setValue(eventKey)
@@ -128,33 +143,42 @@ function App() {
     setSymbol(event.currentTarget.value)
   }  
 
-
   
   const useHandleSubmit=(e: React.FormEvent)=>{
-    setValue("")
-    console.log(e);
-    console.log(from);
-    axios.get<SeriesRawData>("http://127.0.0.1:8081/trend/analyse/GBPJPY/on/DAY/from/2022-12-01/to/2023-01-01/with/95", {
-      headers : {
-        'Access-Control-Allow-Origin': true,
-        'accept': 'application/json'
-      }
-    })
-    .then( response => {
-      // console.log(response)
-      setSeriesRawData(response.data)
-      seriesRawData = response.data
-      // response.data.allMarketData?.forEach ( item => {
-      //   console.log(item.time)
-      // })
-      // console.log(response.data.allMarketData)
-      // seriesRawData
-      console.log(seriesRawData)
-      let series : ApexAxisChartSeries = toApexAxisChartSeries(seriesRawData)??[]
-       setValue("Series2Level1")
-       setSeries(series)
-    })
+    const name = `series = ${series}, from = ${from?.toYYYMMDD()} to = ${to.toYYYMMDD()}, resolution = ${resolution}, level = ${level}`
+    setLoading(true)
+    if ( symbol && resolution && from && to && level ) {
+      setValue("")
+      setTitle(name)
+      console.log(e);
+      let url = `http://127.0.0.1:8081/trend/analyse/${symbol}/on/${resolution}/from/${from?.toYYYMMDD()}/to/${to?.toYYYMMDD()}/with/${level}`
+      axios.get<SeriesRawData>(url, {
+        headers : {
+          'Access-Control-Allow-Origin': true,
+          'accept': 'application/json'
+        }
+      })
+      .then( response => {
+        // console.log(response)
+        setSeriesRawData(response.data)
+        seriesRawData = response.data
+        // response.data.allMarketData?.forEach ( item => {
+        //   console.log(item.time)
+        // })
+        // console.log(response.data.allMarketData)
+        // seriesRawData
+        console.log(seriesRawData)
+        let series : ApexAxisChartSeries = toApexAxisChartSeries(seriesRawData)??[]
+         setValue("done")
+         setSeries(series)
+         setLoading(false)
+      })
+    } else {
+      setMessage(`all field cannot be empty, series = ${series}, from = ${from?.toYYYMMDD()} to = ${to.toYYYMMDD()}, resolution = ${resolution}, level = ${level}`)
+      setValue("alert")
+    }
 
+    
     // setFrom(eventKey)s
   }
 
@@ -200,6 +224,11 @@ function App() {
       return result
   }
 
+  // useEffect(() => {
+  //   if (loading) {
+  //   }
+  // }, [loading]);
+
 
   let series0 : ApexAxisChartSeries = []
 
@@ -208,9 +237,9 @@ function App() {
     <div className="App">
       
       <Form >
-        <Stack direction="horizontal" gap={5}>
+        <Stack direction="horizontal" gap={5} className="App">
           <InputGroup size="sm" className="mb-1">
-              <InputGroup.Text id="basic-addon1">Trend Analysis</InputGroup.Text>
+              <InputGroup.Text id="basic-addon1" >Trend Analysis</InputGroup.Text>
               <Form.Control placeholder="Symbol" aria-label="Symbol" onBlur={handleSymbol} value={symbol}
                 aria-describedby="basic-addon1"
               />    
@@ -255,14 +284,20 @@ function App() {
                 <option value="99">99</option>
               </Form.Select>
               <Button variant="outline-secondary" id="button-addon1" onClick={useHandleSubmit}>
-                Send
+              {loading ? 'Loading…' : 'Send'}
               </Button>
           </InputGroup>          
           {/* <DropDownSearch/> */}
         </Stack>
       </Form>
+      { 
+        value == "alert" && 
+            <Alert key="danger" variant="danger">
+              {message}
+            </Alert>
+      } 
       <header className="App-header">
-      { value == "Series2Level1" && <CandleStick series={series} width={[2,2,1]} title="Series 2Level 20%"></CandleStick> }
+      { value == "done" && <CandleStick series={series} width={[2,2,1]} title={title}></CandleStick> }
       </header>
       {/* <DropdownButton
       title="Select Series"
