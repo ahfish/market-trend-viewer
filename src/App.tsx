@@ -106,7 +106,7 @@ function App() {
   const [value,setValue]=useState<string>("Series2Level0");
   const [from,setFrom]=useState<Date>();
   const [to,setTo]=useState<Date>(new Date());
-  const [resolution,setResolution]=useState<string>("FIVE_MINUTE");
+  const [resolution,setResolution]=useState<string>("FIFTEEN_MINUTE");
   const [symbol,setSymbol]=useState<string>("GBPJPY");
   const [level,setLevel]=useState<string>("90");
   const [message,setMessage]=useState<string>("");
@@ -259,18 +259,18 @@ function App() {
               /> */}
               
               <InputGroup.Text >Interval</InputGroup.Text>
-              <Form.Select aria-label="Interval" onChange={handleResolution}>
+              <Form.Select aria-label="Interval"  defaultValue={resolution} onChange={handleResolution}>
                 <option value="ONE_MINUTE">ONE_MINUTE</option>
                 <option value="THREE_MINUTE">THREE_MINUTE</option>
                 <option value="FIVE_MINUTE">FIVE_MINUTE</option>
-                <option value="FIFTEEN_MINUTE" selected>FIFTEEN_MINUTE</option>
+                <option value="FIFTEEN_MINUTE">FIFTEEN_MINUTE</option>
                 <option value="THIRTY_MINUTE">THIRTY_MINUTE</option>
-                <option value="O  NE_HOUR">ONE_HOUR</option>
+                <option value="ONE_HOUR">ONE_HOUR</option>
                 <option value="DAY">DAY</option>
                 <option value="WEEK">WEEK</option>
               </Form.Select>
               <InputGroup.Text>Level</InputGroup.Text>
-            <Form.Select aria-label="Level" onChange={handleLevel}>
+            <Form.Select aria-label="Level" defaultValue={level} onChange={handleLevel}>
                 <option value="10">10</option>
                 <option value="20">20</option>
                 <option value="30">30</option>
@@ -279,7 +279,7 @@ function App() {
                 <option value="60">60</option>
                 <option value="70">70</option>
                 <option value="80">80</option>
-                <option value="90" selected>90</option>
+                <option value="90">90</option>
                 <option value="95">95</option>
                 <option value="99">99</option>
               </Form.Select>
