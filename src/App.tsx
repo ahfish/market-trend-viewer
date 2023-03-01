@@ -73,10 +73,29 @@ export interface SeriesRawData {
   secondLevelTrend : Array<Trend> | undefined
 }
 
-export interface LineData {
-  x : any;
-  y : any;
+export interface LineData{
+  x: any;
+  y: any;
+  fill?: ApexFill;
+  fillColor?: string;
+  strokeColor?: string;
+  meta?: any;
+  goals?: any;
+  barHeightOffset?: number;
+  columnWidthOffset?: number;
 }
+export interface LineDataWraper {
+  name?: string
+  type?: string
+  color?: string
+  data:
+    | (number | null)[]
+    | LineData[]
+    | [number, number | null][]
+    | [number, (number | null)[]][]
+    | number[][];
+}
+
 
 
 export interface LineCandleStick {
@@ -151,7 +170,7 @@ function App() {
       setValue("")
       setTitle(name)
       console.log(e);
-      let url = `http://127.0.0.1:8081/trend/analyse/${symbol}/on/${resolution}/from/${from?.toYYYMMDD()}/to/${to?.toYYYMMDD()}/with/${level}`
+      let url = `http://127.0.0.1:8081/trend/analyse/${symbol}/on/${resolution}/from/${from?.toYYYMMDD()}/to/${to?.toYYYMMDD()}/with/${level}/for/CANDLE_STICK,FIRST_LEVEL_TREND,SECOND_LEVEL_TREND`
       axios.get<SeriesRawData>(url, {
         headers : {
           'Access-Control-Allow-Origin': true,
@@ -182,46 +201,53 @@ function App() {
     // setFrom(eventKey)s
   }
 
-  const toLineData = ( raw : Array<Trend> | undefined ) : LineData[] => {
-      let result : Array<LineData>  = raw?.map( trend => {
+  const toLineData = ( raw : Array<Trend> | undefined, nameStr : string ) : LineDataWraper | undefined => {
+    if ( raw ) {
+      let result : LineData[]  = raw?.map( trend => {
         if ( trend.direction == "BEARISH" ) 
           return { x : trend.start, y : trend.firstMarketPrice.high }
         else 
         return { x : trend.start, y : trend.firstMarketPrice.low }
       })?? []
-      return result;
+      return {
+        name: nameStr,
+        type: 'line',
+        data: result
+      };
+    } else {
+      return undefined
+    }
   }
 
-  const toLineCandleStick = ( raw : Array<MarketData> | undefined) : LineCandleStick[] => {
-    let result : Array<LineData>  = raw?.map( marketData => {
-      return { 
-        x : marketData.time,
-        y : [marketData.open, marketData.high, marketData.low, marketData.close] 
-      }
-    })?? []
-    return result
+  const toLineCandleStick = ( raw : Array<MarketData> | undefined, nameStr : string) : LineDataWraper | undefined => {
+    if ( raw ) {
+      let result : LineData[]  = raw?.map( marketData => {
+        return { 
+          x : marketData.time,
+          y : [marketData.open, marketData.high, marketData.low, marketData.close] 
+        }
+      })?? []
+      return {
+        name: nameStr,
+        type: 'candlestick',
+        data: result
+      };
+    } else {
+      return undefined
+    }
 
   }
 
 
   const toApexAxisChartSeries = (raw : SeriesRawData) : ApexAxisChartSeries | undefined=> {
-    const result : ApexAxisChartSeries = [ 
-      {
-          name: 'line1',
-          type: 'line',
-          data: toLineData(raw.firstLevelTrend)
-      },
-      {
-        name: 'line2',
-        type: 'line',
-        data: toLineData(raw.secondLevelTrend)
-      },
-      { 
-        name: 'candle',
-        type: 'candlestick',
-        data: toLineCandleStick(raw.allMarketData)
-      }]
-      return result
+    let firstLevel = toLineData(raw.firstLevelTrend, "FirstLevel")
+    let secondLevel = toLineData(raw.secondLevelTrend, "SecondLevel")
+    let candleStick = toLineCandleStick(raw.allMarketData, "CandleStick")
+    const result : ApexAxisChartSeries = [ ]
+    if ( firstLevel ) result.push(firstLevel)
+    if ( secondLevel ) result.push(secondLevel)
+    if ( candleStick ) result.push(candleStick)
+    return result
   }
 
   // useEffect(() => {
