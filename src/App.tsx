@@ -120,6 +120,7 @@ Date.prototype.toYYYMMDD = function(): string {
 function App() {  
   let [seriesRawData,setSeriesRawData]=useState<SeriesRawData>();
   const [series,setSeries]=useState<any>();
+  const [requestType, setrequestType] = useState(["CANDLE_STICK", "FIRST_LEVEL_TREND", "SECOND_LEVEL_TREND"]);
   const [loading,setLoading]=useState<boolean>(false);
   const [title,setTitle]=useState<string>("");
   const [value,setValue]=useState<string>("Series2Level0");
@@ -156,6 +157,19 @@ function App() {
     setLevel(event.currentTarget.value)
   }
 
+  const handleRequestType=(event: React.SyntheticEvent<any>)=>{
+    // console.log(eventKey);
+    console.log(event.currentTarget.selectedOptions)
+    let selectedOptions : HTMLCollection = event.currentTarget.selectedOptions
+    let newRequestType : string[] = []
+    for ( let i = 0 ; i < selectedOptions.length; i++) {
+      newRequestType.push(selectedOptions[i].textContent!!)
+    }
+    setrequestType(newRequestType)
+    //  event.currentTarget.selectedOptions.map( item => { item.value} )
+    // setLevel(event.currentTarget.value)
+  }
+
   const handleSymbol=(event: React.SyntheticEvent<any>)=>{
     // console.log(eventKey);
     console.log(event.currentTarget.value)
@@ -164,13 +178,14 @@ function App() {
 
   
   const useHandleSubmit=(e: React.FormEvent)=>{
-    const name = `series = ${series}, from = ${from?.toYYYMMDD()} to = ${to.toYYYMMDD()}, resolution = ${resolution}, level = ${level}`
+    const name = `series = ${series}, from = ${from?.toYYYMMDD()} to = ${to.toYYYMMDD()}, resolution = ${resolution}, level = ${level}, requestType = ${requestType}`
     setLoading(true)
-    if ( symbol && resolution && from && to && level ) {
+    if ( symbol && resolution && from && to && level && requestType && requestType.length > 0) {
+      let requestTypeString = requestType.toString()
       setValue("")
       setTitle(name)
       console.log(e);
-      let url = `http://127.0.0.1:8081/trend/analyse/${symbol}/on/${resolution}/from/${from?.toYYYMMDD()}/to/${to?.toYYYMMDD()}/with/${level}/for/CANDLE_STICK,FIRST_LEVEL_TREND,SECOND_LEVEL_TREND`
+      let url = `http://127.0.0.1:8081/trend/analyse/${symbol}/on/${resolution}/from/${from?.toYYYMMDD()}/to/${to?.toYYYMMDD()}/with/${level}/for/${requestTypeString}`
       axios.get<SeriesRawData>(url, {
         headers : {
           'Access-Control-Allow-Origin': true,
@@ -263,58 +278,74 @@ function App() {
     <div className="App">
       
       <Form >
+      <InputGroup size="sm" className="mb-1">
         <Stack direction="horizontal" gap={5} className="App">
-          <InputGroup size="sm" className="mb-1">
-              <InputGroup.Text id="basic-addon1" >Trend Analysis</InputGroup.Text>
-              <Form.Control placeholder="Symbol" aria-label="Symbol" onBlur={handleSymbol} value={symbol}
-                aria-describedby="basic-addon1"
-              />    
-              <InputGroup.Text id="basic-addon1">From</InputGroup.Text>
+          <div>
+              <Form.Control as="select" multiple value={requestType} onChange={handleRequestType}>
+                <option value="CANDLE_STICK" selected >CANDLE_STICK</option>
+                <option value="FIRST_LEVEL_TREND" selected >FIRST_LEVEL_TREND</option>
+                <option value="SECOND_LEVEL_TREND" selected >SECOND_LEVEL_TREND</option>
+            </Form.Control>       
+          </div>
+          <div>
+            <Stack gap={2} className="App">
               <div>
-                <DatePicker onChange={handleFrom} selected={from}  dateFormat="yyyy-MM-dd" aria-describedby="basic-addon1" />
+                <Stack direction="horizontal" gap={0} className="App">
+                  
+                      <InputGroup.Text id="basic-addon1" >Trend Analysis</InputGroup.Text>
+                      <Form.Control placeholder="Symbol" aria-label="Symbol" onBlur={handleSymbol} value={symbol}
+                        aria-describedby="basic-addon1"
+                      />    
+                      <InputGroup.Text id="basic-addon1">From</InputGroup.Text>
+                      <div>
+                        <DatePicker onChange={handleFrom} selected={from}  dateFormat="yyyy-MM-dd" aria-describedby="basic-addon1" />
+                      </div>
+                      <InputGroup.Text id="basic-addon1">To</InputGroup.Text>
+                      <div>
+                        <DatePicker onChange={handleTo} selected={to}  dateFormat="yyyy-MM-dd"  />
+                      </div>
+                  
+                  </Stack>
+                  <Stack direction="horizontal" gap={5} className="App">
+                  <InputGroup.Text >Interval</InputGroup.Text>
+                  <Form.Select aria-label="Interval"  defaultValue={resolution} onChange={handleResolution}>
+                      
+                  <option value="ONE_MINUTE">ONE_MINUTE</option>
+                  <option value="THREE_MINUTE">THREE_MINUTE</option>
+                  <option value="FIVE_MINUTE">FIVE_MINUTE</option>
+                  <option value="FIFTEEN_MINUTE">FIFTEEN_MINUTE</option>
+                  <option value="THIRTY_MINUTE">THIRTY_MINUTE</option>
+                  <option value="ONE_HOUR">ONE_HOUR</option>
+                  <option value="DAY">DAY</option>
+                  <option value="WEEK">WEEK</option>
+                </Form.Select>
+                <InputGroup.Text>Level</InputGroup.Text>
+              <Form.Select aria-label="Level" defaultValue={level} onChange={handleLevel}>
+                  <option value="10">10</option>
+                  <option value="20">20</option>
+                  <option value="30">30</option>
+                  <option value="40">40</option>
+                  <option value="50">50</option>
+                  <option value="60">60</option>
+                  <option value="70">70</option>
+                  <option value="80">80</option>
+                  <option value="90">90</option>
+                  <option value="95">95</option>
+                  <option value="99">99</option>
+                </Form.Select>
+                      
+                      <Button variant="outline-secondary" id="button-addon1" onClick={useHandleSubmit}>
+                      {loading ? 'Loading…' : 'Send'}
+                      </Button>
+
+                  
+
+                </Stack>
               </div>
-              <InputGroup.Text id="basic-addon1">To</InputGroup.Text>
-              <div>
-                <DatePicker onChange={handleTo} selected={to}  dateFormat="yyyy-MM-dd"  />
-              </div>
-              {/* <Form.Control type="date" placeholder="yyyy/mm/dd" aria-label="From"  
-                aria-describedby="basic-addon1"
-              />
-              <Form.Control type="date"  placeholder="yyyy-MM-dd" aria-label="To" 
-                aria-describedby="basic-addon1"
-              /> */}
-              
-              <InputGroup.Text >Interval</InputGroup.Text>
-              <Form.Select aria-label="Interval"  defaultValue={resolution} onChange={handleResolution}>
-                <option value="ONE_MINUTE">ONE_MINUTE</option>
-                <option value="THREE_MINUTE">THREE_MINUTE</option>
-                <option value="FIVE_MINUTE">FIVE_MINUTE</option>
-                <option value="FIFTEEN_MINUTE">FIFTEEN_MINUTE</option>
-                <option value="THIRTY_MINUTE">THIRTY_MINUTE</option>
-                <option value="ONE_HOUR">ONE_HOUR</option>
-                <option value="DAY">DAY</option>
-                <option value="WEEK">WEEK</option>
-              </Form.Select>
-              <InputGroup.Text>Level</InputGroup.Text>
-            <Form.Select aria-label="Level" defaultValue={level} onChange={handleLevel}>
-                <option value="10">10</option>
-                <option value="20">20</option>
-                <option value="30">30</option>
-                <option value="40">40</option>
-                <option value="50">50</option>
-                <option value="60">60</option>
-                <option value="70">70</option>
-                <option value="80">80</option>
-                <option value="90">90</option>
-                <option value="95">95</option>
-                <option value="99">99</option>
-              </Form.Select>
-              <Button variant="outline-secondary" id="button-addon1" onClick={useHandleSubmit}>
-              {loading ? 'Loading…' : 'Send'}
-              </Button>
+              </Stack>
+          </div>
+          </Stack>
           </InputGroup>          
-          {/* <DropDownSearch/> */}
-        </Stack>
       </Form>
       { 
         value == "alert" && 
