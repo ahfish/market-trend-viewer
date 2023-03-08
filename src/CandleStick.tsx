@@ -61,7 +61,7 @@ export class CandleStick extends React.Component<CandleStickProp> {
           yaxis: 
             {
               tickAmount: 10,
-               max: 172,
+              //  max: 172,
               tooltip: {
                   enabled: true
               },

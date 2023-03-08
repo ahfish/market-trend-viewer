@@ -293,8 +293,7 @@ function App() {
                 <Stack direction="horizontal" gap={0} className="App">
                   
                       <InputGroup.Text id="basic-addon1" >Trend Analysis</InputGroup.Text>
-                      <Form.Control placeholder="Symbol" aria-label="Symbol" onBlur={handleSymbol} value={symbol}
-                        aria-describedby="basic-addon1"
+                      <Form.Control aria-label="Symbol" onBlur={handleSymbol} aria-describedby="basic-addon1"
                       />    
                       <InputGroup.Text id="basic-addon1">From</InputGroup.Text>
                       <div>
