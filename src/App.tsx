@@ -185,7 +185,8 @@ function App() {
       setValue("")
       setTitle(name)
       console.log(e);
-      let url = `http://127.0.0.1:8081/trend/analyse/${symbol}/on/${resolution}/from/${from?.toYYYMMDD()}/to/${to?.toYYYMMDD()}/with/${level}/for/${requestTypeString}`
+      let url = `http://127.0.0.1:8081/trend/progressing/analyse/${symbol}/on/${resolution}/from/${from?.toYYYMMDD()}/to/${to?.toYYYMMDD()}/with/${level}/for/${requestTypeString}`
+      console.log(`calling ${url}`)
       axios.get<SeriesRawData>(url, {
         headers : {
           'Access-Control-Allow-Origin': true,
