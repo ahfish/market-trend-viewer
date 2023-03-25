@@ -121,6 +121,7 @@ function App() {
   let [seriesRawData,setSeriesRawData]=useState<SeriesRawData>();
   const [series,setSeries]=useState<any>();
   const [requestType, setrequestType] = useState(["CANDLE_STICK", "FIRST_LEVEL_TREND", "SECOND_LEVEL_TREND"]);
+  const [urlTo, setUrlTo] = useState<string>("PROGRESSING");
   const [loading,setLoading]=useState<boolean>(false);
   const [title,setTitle]=useState<string>("");
   const [value,setValue]=useState<string>("Series2Level0");
@@ -157,6 +158,13 @@ function App() {
     setLevel(event.currentTarget.value)
   }
 
+
+  const handleUrlTo=(event: React.SyntheticEvent<any>)=>{
+    // console.log(eventKey);
+    console.log(event.currentTarget.value)
+    setUrlTo(event.currentTarget.value)
+  }
+
   const handleRequestType=(event: React.SyntheticEvent<any>)=>{
     // console.log(eventKey);
     console.log(event.currentTarget.selectedOptions)
@@ -186,7 +194,10 @@ function App() {
       setTitle(name)
       console.log(e);
       let url = `http://127.0.0.1:8081/trend/progressing/analyse/${symbol}/on/${resolution}/from/${from?.toYYYMMDD()}/to/${to?.toYYYMMDD()}/with/${level}/for/${requestTypeString}`
-      console.log(`calling ${url}`)
+      if ( urlTo === "NON-PROGRESSING" ) {
+        url = `http://127.0.0.1:8081/trend/analyse/${symbol}/on/${resolution}/from/${from?.toYYYMMDD()}/to/${to?.toYYYMMDD()}/with/${level}/for/${requestTypeString}`
+      }
+      console.log(`calling curl -X 'GET' '${url}'  -H 'accept: application/json' -o test.json `)
       axios.get<SeriesRawData>(url, {
         headers : {
           'Access-Control-Allow-Origin': true,
@@ -332,6 +343,10 @@ function App() {
                   <option value="90">90</option>
                   <option value="95">95</option>
                   <option value="99">99</option>
+                </Form.Select>
+                <Form.Select aria-label="urlTo" defaultValue={urlTo} onChange={handleUrlTo}>
+                  <option value="NON-PROGRESSING">NON-PROGRESSING</option>
+                  <option value="PROGRESSING">PROGRESSING</option>
                 </Form.Select>
                       
                       <Button variant="outline-secondary" id="button-addon1" onClick={useHandleSubmit}>
