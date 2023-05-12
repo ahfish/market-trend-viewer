@@ -3,7 +3,6 @@ import { render } from 'react-dom';
 import ReactApexChart from 'react-apexcharts'
 import './CandleStick.css'
 // import series from './CandleStickData_second_level';
-import series from './CandleStickData_2';
 
 
 

@@ -17,26 +17,6 @@ import axios from 'axios';
 
 
 import Line from "./Line";
-// import series0 from './CandleStickData_0';
-// import series1 from './CandleStickData_1';
-// import series2 from './CandleStickData_2';
-// import series3 from './CandleStickData_3';
-// import series4 from './CandleStickData_4';
-// import series5 from './CandleStickData_5';
-// import series6 from './CandleStickData_6';
-// import series7 from './CandleStickData_7';
-// import series8 from './CandleStickData_8';
-// import series9 from './CandleStickData_9';
- import series_2level_0 from './CandleStickData_2level_0';
-// import series_2level_1 from './CandleStickData_2level_1';
-// import series_2level_2 from './CandleStickData_2level_2';
-// import series_2level_3 from './CandleStickData_2level_3';
-// import series_2level_4 from './CandleStickData_2level_4';
-// import series_2level_5 from './CandleStickData_2level_5';
-// import series_2level_6 from './CandleStickData_2level_6';
-// import series_2level_7 from './CandleStickData_2level_7';
-// import series_2level_8 from './CandleStickData_2level_8';
-// import series_2level_9 from './CandleStickData_2level_9';
 import { CandleStick, CandleStickProp } from "./CandleStick";
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown'
