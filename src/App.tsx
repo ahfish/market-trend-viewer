@@ -46,11 +46,20 @@ export interface Trend {
   trends : Array<Trend> | undefined
 }
 
+export interface SimpleTargetLocation {
+  start: Date,
+  end: Date,
+  startPoint: number,
+  endPoint: number
+}
+
+
 
 export interface SeriesRawData {
   allMarketData : Array<MarketData> | undefined
   firstLevelTrend : Array<Trend> | undefined
   secondLevelTrend : Array<Trend> | undefined
+  simpleTargetLocation : Array<SimpleTargetLocation> | undefined
 }
 
 export interface LineData{
@@ -100,7 +109,7 @@ Date.prototype.toYYYMMDD = function(): string {
 function App() {  
   let [seriesRawData,setSeriesRawData]=useState<SeriesRawData>();
   const [series,setSeries]=useState<any>();
-  const [requestType, setrequestType] = useState(["CANDLE_STICK", "FIRST_LEVEL_TREND", "SECOND_LEVEL_TREND"]);
+  const [requestType, setrequestType] = useState(["CANDLE_STICK", "FIRST_LEVEL_TREND", "SECOND_LEVEL_TREND","TARGET_LOCATION","SIMPLE_TARGET_LOCATION"]);
   const [urlTo, setUrlTo] = useState<string>("PROGRESSING");
   const [loading,setLoading]=useState<boolean>(false);
   const [title,setTitle]=useState<string>("");
@@ -110,6 +119,7 @@ function App() {
   const [resolution,setResolution]=useState<string>("FIFTEEN_MINUTE");
   const [symbol,setSymbol]=useState<string>("GBPJPY");
   const [level,setLevel]=useState<string>("90");
+  const [rangeMatchPercentile,setRangeMatchPercentile]=useState<string>("50");
   const [message,setMessage]=useState<string>("");
   const handleSelect=(eventKey: any, event: Object)=>{
     console.log(eventKey);
@@ -138,6 +148,11 @@ function App() {
     setLevel(event.currentTarget.value)
   }
 
+  const handleRangeMatchPercentile=(event: React.SyntheticEvent<any>)=>{
+    // console.log(eventKey);
+    console.log(event.currentTarget.value)
+    setRangeMatchPercentile(event.currentTarget.value)
+  }
 
   const handleUrlTo=(event: React.SyntheticEvent<any>)=>{
     // console.log(eventKey);
@@ -173,7 +188,7 @@ function App() {
       setValue("")
       setTitle(name)
       console.log(e);
-      let url = `http://127.0.0.1:8081/trend/progressing/analyse/${symbol}/on/${resolution}/from/${from?.toYYYMMDD()}/to/${to?.toYYYMMDD()}/with/${level}/for/${requestTypeString}`
+      let url = `http://127.0.0.1:8081/trend/progressing/analyse/${symbol}/on/${resolution}/from/${from?.toYYYMMDD()}/to/${to?.toYYYMMDD()}/with/${level}/and/${rangeMatchPercentile}/for/${requestTypeString}`
       if ( urlTo === "NON-PROGRESSING" ) {
         url = `http://127.0.0.1:8081/trend/analyse/${symbol}/on/${resolution}/from/${from?.toYYYMMDD()}/to/${to?.toYYYMMDD()}/with/${level}/for/${requestTypeString}`
       }
@@ -226,6 +241,14 @@ function App() {
     }
   }
 
+  const toLineDataFromSimpleTargetLocation = ( simpleTargetLocation : SimpleTargetLocation , nameStr : string ) : LineDataWraper  => {
+    return {
+      name: nameStr,
+      type: 'line',
+      data: [ {x : simpleTargetLocation.start, y : simpleTargetLocation.startPoint }, {x : simpleTargetLocation.end, y : simpleTargetLocation.startPoint } ]      
+    }
+  }
+
   const toLineCandleStick = ( raw : Array<MarketData> | undefined, nameStr : string) : LineDataWraper | undefined => {
     if ( raw ) {
       let result : LineData[]  = raw?.map( marketData => {
@@ -254,6 +277,13 @@ function App() {
     if ( firstLevel ) result.push(firstLevel)
     if ( secondLevel ) result.push(secondLevel)
     if ( candleStick ) result.push(candleStick)
+
+    if (raw.simpleTargetLocation?.length ?? 0 > 0 ) {
+      raw.simpleTargetLocation?.forEach ( ( simpleTargetLocation, index) => {
+        result.push(toLineDataFromSimpleTargetLocation(simpleTargetLocation, `target_${index}`));
+      })
+    }
+
     return result
   }
 
@@ -277,6 +307,8 @@ function App() {
                 <option value="CANDLE_STICK" selected >CANDLE_STICK</option>
                 <option value="FIRST_LEVEL_TREND" selected >FIRST_LEVEL_TREND</option>
                 <option value="SECOND_LEVEL_TREND" selected >SECOND_LEVEL_TREND</option>
+                <option value="TARGET_LOCATION" selected >TARGET_LOCATION</option>
+                <option value="SIMPLE_TARGET_LOCATION" selected >SIMPLE_TARGET_LOCATION</option>
             </Form.Control>       
           </div>
           <div>
@@ -324,6 +356,21 @@ function App() {
                   <option value="95">95</option>
                   <option value="99">99</option>
                 </Form.Select>
+                <InputGroup.Text>RangeMatchPercentile</InputGroup.Text>
+                <Form.Select aria-label="RangeMatchPercentile" defaultValue={rangeMatchPercentile} onChange={handleRangeMatchPercentile}>
+                  <option value="10">10</option>
+                  <option value="20">20</option>
+                  <option value="30">30</option>
+                  <option value="40">40</option>
+                  <option value="50">50</option>
+                  <option value="60">60</option>
+                  <option value="70">70</option>
+                  <option value="80">80</option>
+                  <option value="90">90</option>
+                  <option value="95">95</option>
+                  <option value="99">99</option>
+                </Form.Select>
+                
                 <Form.Select aria-label="urlTo" defaultValue={urlTo} onChange={handleUrlTo}>
                   <option value="NON-PROGRESSING">NON-PROGRESSING</option>
                   <option value="PROGRESSING">PROGRESSING</option>
@@ -332,9 +379,6 @@ function App() {
                       <Button variant="outline-secondary" id="button-addon1" onClick={useHandleSubmit}>
                       {loading ? 'Loading…' : 'Send'}
                       </Button>
-
-                  
-
                 </Stack>
               </div>
               </Stack>
