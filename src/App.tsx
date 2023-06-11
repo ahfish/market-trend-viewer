@@ -1,7 +1,7 @@
 // import React from 'react';
 import Alert from 'react-bootstrap/Alert';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import React, { Component, useState, useEffect } from "react";
+import React, { Component, useState, useEffect, useRef, RefObject,createRef } from "react";
 import logo from './logo.svg';
 import './App.css';
 import Form from 'react-bootstrap/Form';
@@ -21,6 +21,8 @@ import { CandleStick, CandleStickProp } from "./CandleStick";
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown'
 import 'bootstrap/dist/css/bootstrap.min.css';  
+import { LegacyRef } from 'react';
+import ApexCharts from 'apexcharts'
 
 
 export interface MarketData {
@@ -107,20 +109,29 @@ Date.prototype.toYYYMMDD = function(): string {
  
 
 function App() {  
+
+  
+  //  var candleStick : RefObject<CandleStick>;
+
+  const [lineMap,setLineMap]=useState<Map<string, LineDataWraper>>(new Map<string, LineDataWraper>());
+  const candleStickRef = createRef<CandleStick>();
   let [seriesRawData,setSeriesRawData]=useState<SeriesRawData>();
-  const [series,setSeries]=useState<any>();
+  const [series,setSeries]=useState<ApexAxisChartSeries>([]);
+  const [targetLocationDetails,setTargetLocationDetails]=useState<Array<string>>([]);
+  // const candleStickRef =useRef<CandleStick>(null);
   const [requestType, setrequestType] = useState(["CANDLE_STICK", "FIRST_LEVEL_TREND", "SECOND_LEVEL_TREND","TARGET_LOCATION","SIMPLE_TARGET_LOCATION"]);
   const [urlTo, setUrlTo] = useState<string>("PROGRESSING");
   const [loading,setLoading]=useState<boolean>(false);
   const [title,setTitle]=useState<string>("");
   const [value,setValue]=useState<string>("Series2Level0");
-  const [from,setFrom]=useState<Date>();
-  const [to,setTo]=useState<Date>(new Date());
+  const [from,setFrom]=useState<Date>(new Date("2022-10-01"));
+  const [to,setTo]=useState<Date>(new Date("2022-11-01"));
   const [resolution,setResolution]=useState<string>("FIFTEEN_MINUTE");
   const [symbol,setSymbol]=useState<string>("GBPJPY");
   const [level,setLevel]=useState<string>("90");
   const [rangeMatchPercentile,setRangeMatchPercentile]=useState<string>("50");
   const [message,setMessage]=useState<string>("");
+  let candleStick = <CandleStick series={series} width={[2,2,1]} title={title} ref={candleStickRef}></CandleStick> 
   const handleSelect=(eventKey: any, event: Object)=>{
     console.log(eventKey);
     setValue(eventKey)
@@ -148,6 +159,36 @@ function App() {
     setLevel(event.currentTarget.value)
   }
 
+  const handleTargetLocationDetails=(event: React.SyntheticEvent<any>)=>{
+    // console.log(eventKey);
+    // console.log(event.currentTarget.value)
+    let selectedOptions : HTMLCollection = event.currentTarget.selectedOptions
+    if ( series.length >= 3) {
+      for ( let i = 0; i < series.length; i++) {
+        if ( series[i].name?.startsWith("target_") ) {
+          series.splice(i);
+        }
+        
+      }
+    }
+    for ( let i = 0 ; i < selectedOptions.length; i++) {
+      const lineData = lineMap.get(selectedOptions[i].textContent!!);
+      series.push(lineData!!)
+
+      // newRequestType.push(selectedOptions[i].textContent!!)
+    }
+    
+    // const newSeries : ApexAxisChartSeries = [
+    //   // ,
+    //   // series.filter(s => s.name?.startsWith("SecondLevel")),
+    //   // series.filter(s => s.name?.startsWith("CandleStick"))
+    // ];
+    
+    setSeries(series)
+    // candleStick.props.series.push(lineData!!)
+    candleStickRef.current?.updateSeries(series);
+  }
+
   const handleRangeMatchPercentile=(event: React.SyntheticEvent<any>)=>{
     // console.log(eventKey);
     console.log(event.currentTarget.value)
@@ -169,6 +210,7 @@ function App() {
       newRequestType.push(selectedOptions[i].textContent!!)
     }
     setrequestType(newRequestType)
+    
     //  event.currentTarget.selectedOptions.map( item => { item.value} )
     // setLevel(event.currentTarget.value)
   }
@@ -186,7 +228,8 @@ function App() {
     if ( symbol && resolution && from && to && level && requestType && requestType.length > 0) {
       let requestTypeString = requestType.toString()
       setValue("")
-      setTitle(name)
+      setTargetLocationDetails([]);
+      setTitle(name);
       console.log(e);
       let url = `http://127.0.0.1:8081/trend/progressing/analyse/${symbol}/on/${resolution}/from/${from?.toYYYMMDD()}/to/${to?.toYYYMMDD()}/with/${level}/and/${rangeMatchPercentile}/for/${requestTypeString}`
       if ( urlTo === "NON-PROGRESSING" ) {
@@ -208,11 +251,16 @@ function App() {
         // })
         // console.log(response.data.allMarketData)
         // seriesRawData
-        console.log(seriesRawData)
         let series : ApexAxisChartSeries = toApexAxisChartSeries(seriesRawData)??[]
          setValue("done")
          setSeries(series)
          setLoading(false)
+         console.log(`location target size ${targetLocationDetails.length}`)
+         targetLocationDetails.forEach( name => {
+          console.log(`hiding ${name}`)
+          // ApexCharts.getChartByID("ReactApexChart")!!.hideSeries(name)
+         });
+         setTargetLocationDetails(targetLocationDetails)
       })
     } else {
       setMessage(`all field cannot be empty, series = ${series}, from = ${from?.toYYYMMDD()} to = ${to.toYYYMMDD()}, resolution = ${resolution}, level = ${level}`)
@@ -278,11 +326,17 @@ function App() {
     if ( secondLevel ) result.push(secondLevel)
     if ( candleStick ) result.push(candleStick)
 
+    lineMap.clear()
     if (raw.simpleTargetLocation?.length ?? 0 > 0 ) {
       raw.simpleTargetLocation?.forEach ( ( simpleTargetLocation, index) => {
-        result.push(toLineDataFromSimpleTargetLocation(simpleTargetLocation, `target_${index}`));
+        const name = `target_${index}`
+        lineMap.set(name, toLineDataFromSimpleTargetLocation(simpleTargetLocation, name))
+        // result.push();
+        targetLocationDetails.push(name);
+        
       })
     }
+    setLineMap(lineMap);
 
     return result
   }
@@ -294,7 +348,6 @@ function App() {
 
 
   let series0 : ApexAxisChartSeries = []
-
 
   return (
     <div className="App">
@@ -310,6 +363,9 @@ function App() {
                 <option value="TARGET_LOCATION" selected >TARGET_LOCATION</option>
                 <option value="SIMPLE_TARGET_LOCATION" selected >SIMPLE_TARGET_LOCATION</option>
             </Form.Control>       
+            <Form.Control as="select" multiple onChange={handleTargetLocationDetails}>
+              {targetLocationDetails.map( detail => <option value={detail}>{detail}</option>)}
+            </Form.Control>   
           </div>
           <div>
             <Stack gap={2} className="App">
@@ -317,7 +373,7 @@ function App() {
                 <Stack direction="horizontal" gap={0} className="App">
                   
                       <InputGroup.Text id="basic-addon1" >Trend Analysis</InputGroup.Text>
-                      <Form.Control aria-label="Symbol" onBlur={handleSymbol} aria-describedby="basic-addon1"
+                      <Form.Control aria-label="Symbol" onBlur={handleSymbol} value={symbol} aria-describedby="basic-addon1"
                       />    
                       <InputGroup.Text id="basic-addon1">From</InputGroup.Text>
                       <div>
@@ -393,7 +449,7 @@ function App() {
             </Alert>
       } 
       <header className="App-header">
-      { value == "done" && <CandleStick series={series} width={[2,2,1]} title={title}></CandleStick> }
+      { value == "done" && candleStick}
       </header>
       {/* <DropdownButton
       title="Select Series"

@@ -1,7 +1,11 @@
-import React, { Component } from 'react';
+// import React, { Component } from 'react';
 import { render } from 'react-dom';
+import { LegacyRef, createRef } from 'react';
 import ReactApexChart from 'react-apexcharts'
 import './CandleStick.css'
+import React, { Component, useState, useEffect, useRef, RefObject } from "react";
+import ApexCharts from 'apexcharts'
+
 // import series from './CandleStickData_second_level';
 
 
@@ -17,10 +21,14 @@ export interface CandleStickProp {
 export class CandleStick extends React.Component<CandleStickProp> {
   opts: ApexCharts.ApexOptions = {}
 
+  private reactApexChart = createRef<ReactApexChart>();
+  private series : ApexAxisChartSeries | undefined
+  // private chart = <ReactApexChart id="ReactApexChart" options={this.opts} series={this.props.series} height={890} width={1900} title="Name" ref={this.reactApexChart}/>
+  // reactApexChart = useRef<ReactApexChart>()
+
     constructor(props: CandleStickProp) {
         super(props);
-        this.state = {
-        };
+        this.series = props.series;
 
         this.opts = {
           plotOptions: {
@@ -29,6 +37,7 @@ export class CandleStick extends React.Component<CandleStickProp> {
             }
           },
           chart: {
+              id: 'ReactApexChart',
               type: 'candlestick',
               // width: 1000,
               zoom: {
@@ -94,15 +103,49 @@ export class CandleStick extends React.Component<CandleStickProp> {
               }]
             }
           }
+        this.state = {
+          opts: this.opts,
+          series: this.props.series
+        };
+
     }
 
+    public getReactApexChart() : ReactApexChart | undefined {
+      //  return this.chart.;
+      return undefined;
+    }
+
+    public hideSeries(name : string) {
+      console.log(`hiding target ${name}`)
+      // this.reactApexChart.current?
+      //var reactApexChart : ReactApexChart = this.getReactApexChart();
+      // let id = reactApexChart.props?.options?.chart?.id
+      // console.log(`hiding target ${name} for ${id}`)
+      
+      let id : string = this.reactApexChart.current?.props?.options?.chart?.id!!
+      ApexCharts.getChartByID(id)?.hideSeries(name);
+    }
+
+    public updateSeries(series : ApexAxisChartSeries) {
+      console.log(`updateSeries`)
+      this.series = series;
+      // this.setState(
+      //   {series: series}
+      // )
+      // this.props.series = series
+      //var reactApexChart : ReactApexChart = this.getReactApexChart();
+      let id : string = this.reactApexChart.current?.props?.options?.chart?.id!!
+      ApexCharts.getChartByID(id)?.updateSeries(series);
+      // console.log(`hiding target ${name} for ${id}`)
+      // ApexCharts.getChartByID("ReactApexChart")?.hideSeries(name)
+    }
 
     render() {
         return (
             <div className="CandleStick">
                 <header className="CandleStick-header">
                 <div id="chart">
-                    <ReactApexChart options={this.opts} series={this.props.series} height={890} width={1900} title="Name" />
+                <ReactApexChart id="ReactApexChart" options={this.opts} series={this.series} height={890} width={1900} title="Name" ref={this.reactApexChart}/>
                 </div>
                 <div id="html-dist"></div>
                 </header>
