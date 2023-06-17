@@ -210,9 +210,8 @@ function App() {
       newRequestType.push(selectedOptions[i].textContent!!)
     }
     setrequestType(newRequestType)
-    
-    //  event.currentTarget.selectedOptions.map( item => { item.value} )
-    // setLevel(event.currentTarget.value)
+
+
   }
 
   const handleSymbol=(event: React.SyntheticEvent<any>)=>{
@@ -231,7 +230,7 @@ function App() {
       setTargetLocationDetails([]);
       setTitle(name);
       console.log(e);
-      let url = `http://127.0.0.1:8081/trend/progressing/analyse/${symbol}/on/${resolution}/from/${from?.toYYYMMDD()}/to/${to?.toYYYMMDD()}/with/${level}/and/${rangeMatchPercentile}/for/${requestTypeString}`
+      let url = `http://127.0.0.1:8081/trend/progressing/analyse/${symbol}/on/${resolution}/from/${from?.toYYYMMDD()}/to/${to?.toYYYMMDD()}/with/${level}/and/${rangeMatchPercentile}/for/${requestTypeString}/true`
       if ( urlTo === "NON-PROGRESSING" ) {
         url = `http://127.0.0.1:8081/trend/analyse/${symbol}/on/${resolution}/from/${from?.toYYYMMDD()}/to/${to?.toYYYMMDD()}/with/${level}/for/${requestTypeString}`
       }
@@ -351,7 +350,7 @@ function App() {
   let series0 : ApexAxisChartSeries = []
 
   return (
-    <div className="App">
+    <div className="App" style={{ height: "100%", overflow: "auto", width: "100%" }}>
       
       <Form >
       <InputGroup size="sm" className="mb-1">
@@ -364,10 +363,12 @@ function App() {
                 <option value="TARGET_LOCATION" selected >TARGET_LOCATION</option>
                 <option value="SIMPLE_TARGET_LOCATION" selected >SIMPLE_TARGET_LOCATION</option>
             </Form.Control>       
-            <Form.Control as="select" multiple onChange={handleTargetLocationDetails}>
-              {targetLocationDetails.map( detail => <option value={detail}>{detail}</option>)}
-            </Form.Control>   
           </div>
+          <div>
+          <Form.Control as="select" multiple onChange={handleTargetLocationDetails}>
+              {targetLocationDetails.map( detail => <option value={detail}>{detail}</option>)}
+            </Form.Control>
+            </div>          
           <div>
             <Stack gap={2} className="App">
               <div>
@@ -439,9 +440,15 @@ function App() {
                 </Stack>
               </div>
               </Stack>
-          </div>
+            </div>
           </Stack>
-          </InputGroup>          
+          <Stack direction="vertical" gap={5} className="App">
+            <header className="App-header" >
+              { value == "done" && candleStick}
+            </header>
+           </Stack>
+
+        </InputGroup>          
       </Form>
       { 
         value == "alert" && 
@@ -449,44 +456,6 @@ function App() {
               {message}
             </Alert>
       } 
-      <header className="App-header">
-      { value == "done" && candleStick}
-      </header>
-      {/* <DropdownButton
-      title="Select Series"
-      id="dropdown-menu-align-right"
-      onSelect={handleSelect}
-        >
-              <Dropdown.Item eventKey="Series2Level0">Series 2level 0</Dropdown.Item>
-              <Dropdown.Divider />
-              <Dropdown.Item eventKey="Series2Level1">Series 2level 1</Dropdown.Item>
-              <Dropdown.Item eventKey="Series2Level2">Series 2level 2</Dropdown.Item>
-              <Dropdown.Item eventKey="Series2Level3">Series 2level 3</Dropdown.Item>
-              <Dropdown.Item eventKey="Series2Level4">Series 2level 4</Dropdown.Item>
-              <Dropdown.Item eventKey="Series2Level5">Series 2level 5</Dropdown.Item>
-              <Dropdown.Item eventKey="Series2Level6">Series 2level 6</Dropdown.Item>
-              <Dropdown.Item eventKey="Series2Level7">Series 2level 7</Dropdown.Item>
-              <Dropdown.Item eventKey="Series2Level8">Series 2level 8</Dropdown.Item>
-              <Dropdown.Item eventKey="Series2Level9">Series 2level 9</Dropdown.Item>
-      </DropdownButton>
-      <header className="App-header">
-          { value == "Series2Level0" && <CandleStick series={ } width={[2,2,1]} title="Series 2Level 10%"></CandleStick> }
-          { value == "Series2Level1" && <CandleStick series={series_2level_1} width={[2,2,1]} title="Series 2Level 20%"></CandleStick> }
-          { value == "Series2Level2" && <CandleStick series={series_2level_2} width={[2,2,1]} title="Series 2Level 30%"></CandleStick> }
-          { value == "Series2Level3" && <CandleStick series={series_2level_3} width={[2,2,1]} title="Series 2Level 40%"></CandleStick> }
-          { value == "Series2Level4" && <CandleStick series={series_2level_4} width={[2,2,1]} title="Series 2Level 50%"></CandleStick> }
-          { value == "Series2Level5" && <CandleStick series={series_2level_5} width={[2,2,1]} title="Series 2Level 60%"></CandleStick> }
-          { value == "Series2Level6" && <CandleStick series={series_2level_6} width={[2,2,1]} title="Series 2Level 70%"></CandleStick> }
-          { value == "Series2Level7" && <CandleStick series={series_2level_7} width={[2,2,1]} title="Series 2Level 80%"></CandleStick> }
-          { value == "Series2Level8" && <CandleStick series={series_2level_8} width={[2,2,1]} title="Series 2Level 90%"></CandleStick> }
-          { value == "Series2Level9" && <CandleStick series={series_2level_9} width={[2,2,1]} title="Series 2Level 95%"></CandleStick> }
-       </header>
-    </div> */}
-    {/* // <div className="App">
-    //   <header className="App-header">
-      // <CandleStick series={series}></CandleStick>
-    //   </header>
-    // </div> */}
     </div>
   );
 }

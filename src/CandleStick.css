@@ -5,7 +5,6 @@
 
 .CandleStick-header {
     background-color: #1a1f25;
-
     min-height: 80vh;
     display: flex;
     flex-direction: column;
@@ -13,4 +12,7 @@
     justify-content: center;
     font-size: calc(10px + 2vmin);
     color: rgb(95, 75, 75);
+      height: "100%";
+  overflow: "auto";
+  width: "100%" 
   }
