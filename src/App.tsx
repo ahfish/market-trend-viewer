@@ -329,7 +329,8 @@ function App() {
     lineMap.clear()
     if (raw.simpleTargetLocation?.length ?? 0 > 0 ) {
       raw.simpleTargetLocation?.forEach ( ( simpleTargetLocation, index) => {
-        const name = `target_${index}`
+        const name = `target_${index}_${simpleTargetLocation.start}`
+        console.log(`adding target ${name}`)
         lineMap.set(name, toLineDataFromSimpleTargetLocation(simpleTargetLocation, name))
         // result.push();
         targetLocationDetails.push(name);
