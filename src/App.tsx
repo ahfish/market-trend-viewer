@@ -397,6 +397,7 @@ function App() {
                   <option value="FIFTEEN_MINUTE">FIFTEEN_MINUTE</option>
                   <option value="THIRTY_MINUTE">THIRTY_MINUTE</option>
                   <option value="ONE_HOUR">ONE_HOUR</option>
+                  <option value="FOUR_HOUR">FOUR_HOUR</option>
                   <option value="DAY">DAY</option>
                   <option value="WEEK">WEEK</option>
                 </Form.Select>
