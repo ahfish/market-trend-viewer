@@ -56,12 +56,19 @@ export interface SimpleTargetLocation {
 }
 
 
+export interface DoublePoint {
+  start: Date,
+  end: Date,
+  targetPointValue: number
+}
+
 
 export interface SeriesRawData {
   allMarketData : Array<MarketData> | undefined
   firstLevelTrend : Array<Trend> | undefined
   secondLevelTrend : Array<Trend> | undefined
   simpleTargetLocation : Array<SimpleTargetLocation> | undefined
+  validDoublePoint : Array<DoublePoint> | undefined
 }
 
 export interface LineData{
@@ -114,12 +121,14 @@ function App() {
   //  var candleStick : RefObject<CandleStick>;
 
   const [lineMap,setLineMap]=useState<Map<string, LineDataWraper>>(new Map<string, LineDataWraper>());
+  const [doublePointMap,setDoublePointMap]=useState<Map<string, LineDataWraper>>(new Map<string, LineDataWraper>());
   const candleStickRef = createRef<CandleStick>();
   let [seriesRawData,setSeriesRawData]=useState<SeriesRawData>();
   const [series,setSeries]=useState<ApexAxisChartSeries>([]);
   const [targetLocationDetails,setTargetLocationDetails]=useState<Array<string>>([]);
+  const [doublePointDetails,setDoublePointDetails]=useState<Array<string>>([]);
   // const candleStickRef =useRef<CandleStick>(null);
-  const [requestType, setrequestType] = useState(["CANDLE_STICK", "FIRST_LEVEL_TREND", "SECOND_LEVEL_TREND","TARGET_LOCATION","SIMPLE_TARGET_LOCATION"]);
+  const [requestType, setrequestType] = useState(["CANDLE_STICK", "FIRST_LEVEL_TREND", "SECOND_LEVEL_TREND","TARGET_LOCATION","SIMPLE_TARGET_LOCATION","DOUBLE_POINT"]);
   const [urlTo, setUrlTo] = useState<string>("PROGRESSING");
   const [loading,setLoading]=useState<boolean>(false);
   const [title,setTitle]=useState<string>("");
@@ -188,6 +197,37 @@ function App() {
     // candleStick.props.series.push(lineData!!)
     candleStickRef.current?.updateSeries(series);
   }
+
+
+  const handleDoublePointDetails=(event: React.SyntheticEvent<any>)=>{
+    // console.log(eventKey);
+    // console.log(event.currentTarget.value)
+    let selectedOptions : HTMLCollection = event.currentTarget.selectedOptions
+    if ( series.length >= 3) {
+      for ( let i = 0; i < series.length; i++) {
+        if ( series[i].name?.startsWith("doublePoint_") ) {
+          series.splice(i);
+        }
+        
+      }
+    }
+    for ( let i = 0 ; i < selectedOptions.length; i++) {
+      const doubePointData = doublePointMap.get(selectedOptions[i].textContent!!);
+      series.push(doubePointData!!)
+
+      // newRequestType.push(selectedOptions[i].textContent!!)
+    }
+    
+    // const newSeries : ApexAxisChartSeries = [
+    //   // ,
+    //   // series.filter(s => s.name?.startsWith("SecondLevel")),
+    //   // series.filter(s => s.name?.startsWith("CandleStick"))
+    // ];
+    
+    setSeries(series)
+    // candleStick.props.series.push(lineData!!)
+    candleStickRef.current?.updateSeries(series);
+  }  
 
   const handleRangeMatchPercentile=(event: React.SyntheticEvent<any>)=>{
     // console.log(eventKey);
@@ -296,6 +336,15 @@ function App() {
     }
   }
 
+
+  const toLineDataFromDoublePoint = ( doublePoint : DoublePoint, nameStr : string ) : LineDataWraper  => {
+    return {
+      name: nameStr,
+      type: 'line',
+      data: [ {x : doublePoint.start, y : doublePoint.targetPointValue }, {x : doublePoint.end, y : doublePoint.targetPointValue } ]      
+    }
+  }
+
   const toLineCandleStick = ( raw : Array<MarketData> | undefined, nameStr : string) : LineDataWraper | undefined => {
     if ( raw ) {
       let result : LineData[]  = raw?.map( marketData => {
@@ -338,6 +387,19 @@ function App() {
     }
     setLineMap(lineMap);
 
+    doublePointMap.clear()
+    if (raw.validDoublePoint?.length ?? 0 > 0 ) {
+      raw.validDoublePoint?.forEach ( ( doublePoint, index) => {
+        const name = `doublePoint_${index}_${doublePoint.start}`
+        console.log(`adding doublePoint ${name}`)
+        doublePointMap.set(name, toLineDataFromDoublePoint(doublePoint, name))
+        // result.push();
+        doublePointDetails.push(name);
+
+    
+      })}
+    setDoublePointMap(doublePointMap);
+    
     return result
   }
 
@@ -362,14 +424,21 @@ function App() {
                 <option value="SECOND_LEVEL_TREND" selected >SECOND_LEVEL_TREND</option>
                 <option value="TARGET_LOCATION" selected >TARGET_LOCATION</option>
                 <option value="SIMPLE_TARGET_LOCATION" selected >SIMPLE_TARGET_LOCATION</option>
+                <option value="DOUBLE_POINT" selected >DOUBLE_POINT</option>
             </Form.Control>       
           </div>
           <div>
-          <Form.Control as="select" multiple onChange={handleTargetLocationDetails}>
+            <Form.Control as="select" multiple onChange={handleTargetLocationDetails}>
               {targetLocationDetails.map( detail => <option value={detail}>{detail}</option>)}
             </Form.Control>
-            </div>          
+         </div>          
+         <div>
+            <Form.Control as="select" multiple onChange={handleDoublePointDetails}>
+              {doublePointDetails.map( detail => <option value={detail}>{detail}</option>)}
+            </Form.Control>
+         </div>                   
           <div>
+            
             <Stack gap={2} className="App">
               <div>
                 <Stack direction="horizontal" gap={0} className="App">
