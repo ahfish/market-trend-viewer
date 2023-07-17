@@ -54,9 +54,11 @@ export class CandleStick extends React.Component<CandleStickProp> {
             },
           xaxis: {
               type: 'datetime',
+              
               // type: "numeric",
               tickAmount: 'dataPoints',
               labels: {
+                  datetimeUTC: false,
                   show: true,
                   style: {
                     colors: 'white',

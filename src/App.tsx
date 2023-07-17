@@ -59,7 +59,8 @@ export interface SimpleTargetLocation {
 export interface DoublePoint {
   start: Date,
   end: Date,
-  targetPointValue: number
+  targetPointValue: number,
+  targetPointValueTime: Date
 }
 
 
@@ -390,7 +391,7 @@ function App() {
     doublePointMap.clear()
     if (raw.validDoublePoint?.length ?? 0 > 0 ) {
       raw.validDoublePoint?.forEach ( ( doublePoint, index) => {
-        const name = `doublePoint_${index}_${doublePoint.start}`
+        const name = `doublePoint_${index}_${doublePoint.targetPointValueTime}_${doublePoint.start}__${doublePoint.end}`
         console.log(`adding doublePoint ${name}`)
         doublePointMap.set(name, toLineDataFromDoublePoint(doublePoint, name))
         // result.push();
