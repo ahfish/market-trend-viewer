@@ -140,7 +140,7 @@ function App() {
   const [targetLocationDetails,setTargetLocationDetails]=useState<Array<string>>([]);
   const [doublePointDetails,setDoublePointDetails]=useState<Array<string>>([]);
   // const candleStickRef =useRef<CandleStick>(null);
-  const [requestType, setrequestType] = useState(["CANDLE_STICK", "FIRST_LEVEL_TREND", "SECOND_LEVEL_TREND","TARGET_LOCATION","SIMPLE_TARGET_LOCATION","DOUBLE_POINT", "RANGE"]);
+  const [requestType, setrequestType] = useState(["CANDLE_STICK", "FIRST_LEVEL_TREND", "SECOND_LEVEL_TREND","TARGET_LOCATION","SIMPLE_TARGET_LOCATION","DOUBLE_POINT", "RANGE", "HIGHLIGHTED_TREND"]);
   const [urlTo, setUrlTo] = useState<string>("PROGRESSING");
   const [loading,setLoading]=useState<boolean>(false);
   const [title,setTitle]=useState<string>("");
@@ -528,6 +528,7 @@ function App() {
                 <option value="SIMPLE_TARGET_LOCATION" selected >SIMPLE_TARGET_LOCATION</option>
                 <option value="DOUBLE_POINT" selected >DOUBLE_POINT</option>
                 <option value="RANGE" selected >RANGE</option>
+                <option value="HIGHLIGHTED_TREND" selected >RANGE</option>
             </Form.Control>       
           </div>
           <div>
