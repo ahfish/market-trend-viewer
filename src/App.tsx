@@ -528,7 +528,7 @@ function App() {
                 <option value="SIMPLE_TARGET_LOCATION" selected >SIMPLE_TARGET_LOCATION</option>
                 <option value="DOUBLE_POINT" selected >DOUBLE_POINT</option>
                 <option value="RANGE" selected >RANGE</option>
-                <option value="HIGHLIGHTED_TREND" selected >RANGE</option>
+                <option value="HIGHLIGHTED_TREND" selected >HIGHLIGHTED_TREND</option>
             </Form.Control>       
           </div>
           <div>
