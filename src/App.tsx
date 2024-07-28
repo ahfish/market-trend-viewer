@@ -75,6 +75,7 @@ export interface SeriesRawData {
   allMarketData : Array<MarketData> | undefined
   firstLevelTrend : Array<Trend> | undefined
   secondLevelTrend : Array<Trend> | undefined
+  highlightedTrend : Array<Trend> | undefined
   simpleTargetLocation : Array<SimpleTargetLocation> | undefined
   validDoublePoint : Array<DoublePoint> | undefined
   ranges : Array<Range> | undefined
@@ -352,6 +353,25 @@ function App() {
     }
   }
 
+  const trend2Line = (trend : Trend | undefined ) : LineData[] => {
+    if ( trend ) {
+      if ( trend.direction == "BEARISH" ) {
+          return [
+            { x : trend.start, y : trend.firstMarketPrice.high },
+            { x : trend.end, y : trend.lastMarketPrice.low }
+          ]
+      } else {
+        return [
+          { x : trend.start, y : trend.firstMarketPrice.low },
+          { x : trend.end, y : trend.lastMarketPrice.high }
+        ]
+      }
+    }
+    return []
+  }
+
+
+
   const toLineDataFromSimpleTargetLocation = ( simpleTargetLocation : SimpleTargetLocation , nameStr : string ) : LineDataWraper  => {
     return {
       name: nameStr,
@@ -412,10 +432,35 @@ function App() {
   const toApexAxisChartSeries = (raw : SeriesRawData) : ApexAxisChartSeries | undefined=> {
     let firstLevel = toLineData(raw.firstLevelTrend, "FirstLevel")
     let secondLevel = toLineData(raw.secondLevelTrend, "SecondLevel")
+    // let highlightedTrend = toLineData(raw.highlightedTrend, "highlightedTrend")
     let candleStick = toLineCandleStick(raw.allMarketData, "CandleStick")
     const result : ApexAxisChartSeries = [ ]
     if ( firstLevel ) result.push(firstLevel)
     if ( secondLevel ) result.push(secondLevel)
+
+    if ( raw.highlightedTrend ) {
+      raw.highlightedTrend?.forEach( (trend, index) => {
+        let line : LineData[]  = trend2Line(trend)
+        let highlightedTrend : LineDataWraper = {
+          name: `highlightedTrend_${index}`,
+          type: 'line',
+          data: line          
+        }
+        result.push(highlightedTrend)
+      })
+    }
+      
+
+      // })
+      // let result : LineData[]  = trend2Line(raw)
+      // return {
+      //   name: nameStr,
+      //   type: 'line',
+      //   data: result
+      // };
+
+    // if ( highlightedTrend ) result.push(highlightedTrend)
+      
     if ( candleStick ) result.push(candleStick)
 
     lineMap.clear()
