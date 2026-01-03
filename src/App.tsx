@@ -145,10 +145,10 @@ function App() {
   const [loading,setLoading]=useState<boolean>(false);
   const [title,setTitle]=useState<string>("");
   const [value,setValue]=useState<string>("Series2Level0");
-  const [from,setFrom]=useState<Date>(new Date("2022-10-01"));
-  const [to,setTo]=useState<Date>(new Date("2022-11-01"));
-  const [resolution,setResolution]=useState<string>("FIFTEEN_MINUTE");
-  const [symbol,setSymbol]=useState<string>("GBPJPY");
+  const [from,setFrom]=useState<Date>(new Date("2024-12-01"));
+  const [to,setTo]=useState<Date>(new Date("2026-01-01"));
+  const [resolution,setResolution]=useState<string>("ONE_HOUR");
+  const [symbol,setSymbol]=useState<string>("EURAUD");
   const [level,setLevel]=useState<string>("90");
   const [rangeMatchPercentile,setRangeMatchPercentile]=useState<string>("50");
   const [message,setMessage]=useState<string>("");
