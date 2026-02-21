@@ -146,7 +146,11 @@ function App() {
   const [title,setTitle]=useState<string>("");
   const [value,setValue]=useState<string>("Series2Level0");
   const [from,setFrom]=useState<Date>(new Date("2024-12-01"));
-  const [to,setTo]=useState<Date>(new Date("2026-01-01"));
+  const [to,setTo]=useState<Date>(() => {
+  const date = new Date();
+  date.setHours(0, 0, 0, 0);
+  return date;
+});
   const [resolution,setResolution]=useState<string>("ONE_HOUR");
   const [symbol,setSymbol]=useState<string>("EURAUD");
   const [level,setLevel]=useState<string>("90");
