@@ -23,6 +23,8 @@ import Dropdown from 'react-bootstrap/Dropdown'
 import 'bootstrap/dist/css/bootstrap.min.css';  
 import { LegacyRef } from 'react';
 import ApexCharts from 'apexcharts'
+import { del } from 'idb-keyval'
+import { get, set } from 'idb-keyval'
 
 
 export interface MarketData {
@@ -143,14 +145,15 @@ function App() {
   const [requestType, setrequestType] = useState(["CANDLE_STICK", "FIRST_LEVEL_TREND", "SECOND_LEVEL_TREND","TARGET_LOCATION","SIMPLE_TARGET_LOCATION","DOUBLE_POINT", "RANGE", "HIGHLIGHTED_TREND"]);
   const [urlTo, setUrlTo] = useState<string>("PROGRESSING");
   const [loading,setLoading]=useState<boolean>(false);
+  const [useCache, setUseCache] = useState<boolean>(true);
   const [title,setTitle]=useState<string>("");
   const [value,setValue]=useState<string>("Series2Level0");
   const [from,setFrom]=useState<Date>(new Date("2024-12-01"));
   const [to,setTo]=useState<Date>(() => {
   const date = new Date();
-  date.setHours(0, 0, 0, 0);
-  return date;
-});
+    date.setHours(0, 0, 0, 0);
+    return date;
+  });
   const [resolution,setResolution]=useState<string>("ONE_HOUR");
   const [symbol,setSymbol]=useState<string>("EURAUD");
   const [level,setLevel]=useState<string>("90");
@@ -289,9 +292,16 @@ function App() {
     setSymbol(event.currentTarget.value)
   }  
 
+  const processData = (data: SeriesRawData) => {
+    setSeriesRawData(data);
+    const series = toApexAxisChartSeries(data) ?? [];
+    setSeries(series);
+    setValue("done");
+  };
   
-  const useHandleSubmit=(e: React.FormEvent)=>{
+  const useHandleSubmit= async (e: React.FormEvent)=>{
     const name = `series = ${series}, from = ${from?.toYYYMMDD()} to = ${to.toYYYMMDD()}, resolution = ${resolution}, level = ${level}, requestType = ${requestType}`
+    
     setLoading(true)
     if ( symbol && resolution && from && to && level && requestType && requestType.length > 0) {
       let requestTypeString = requestType.toString()
@@ -303,33 +313,47 @@ function App() {
       if ( urlTo === "NON-PROGRESSING" ) {
         url = `http://127.0.0.1:8081/trend/analyse/${symbol}/on/${resolution}/from/${from?.toYYYMMDD()}/to/${to?.toYYYMMDD()}/with/${level}/for/${requestTypeString}`
       }
-      console.log(`calling curl -X 'GET' '${url}'  -H 'accept: application/json' -o test.json `)
-      axios.get<SeriesRawData>(url, {
-        headers : {
-          'Access-Control-Allow-Origin': true,
-          'accept': 'application/json'
+      const cacheKey = `data_${symbol}_${resolution}_${from?.toYYYMMDD()}_${to?.toYYYMMDD()}_${level}_${requestType}_${rangeMatchPercentile}_${urlTo}`;
+      const cachedData = await get<SeriesRawData>(cacheKey)
+      try {
+        if (cachedData && useCache) {
+          console.log("Loading from cache...");
+          processData(cachedData);          
+        } else {
+          console.log(`calling curl -X 'GET' '${url}'  -H 'accept: application/json' -o test.json `)
+          axios.get<SeriesRawData>(url, {
+            headers : {
+              'Access-Control-Allow-Origin': true,
+              'accept': 'application/json'
+            }
+          })
+          .then( response => {
+            // console.log(response)
+            setSeriesRawData(response.data)
+            seriesRawData = response.data
+            // response.data.allMarketData?.forEach ( item => {
+            //   console.log(item.time)
+            // })
+            // console.log(response.data.allMarketData)
+            // seriesRawData
+            set(cacheKey, response.data);
+            let series : ApexAxisChartSeries = toApexAxisChartSeries(seriesRawData)??[]
+            setValue("done")
+            setSeries(series)
+            setLoading(false)
+            console.log(`location target size ${targetLocationDetails.length}`)
+            targetLocationDetails.forEach( name => {
+              console.log(`hiding ${name}`)
+              // ApexCharts.getChartByID("ReactApexChart")!!.hideSeries(name)
+            });
+            setTargetLocationDetails(targetLocationDetails)
+          })
         }
-      })
-      .then( response => {
-        // console.log(response)
-        setSeriesRawData(response.data)
-        seriesRawData = response.data
-        // response.data.allMarketData?.forEach ( item => {
-        //   console.log(item.time)
-        // })
-        // console.log(response.data.allMarketData)
-        // seriesRawData
-        let series : ApexAxisChartSeries = toApexAxisChartSeries(seriesRawData)??[]
-         setValue("done")
-         setSeries(series)
-         setLoading(false)
-         console.log(`location target size ${targetLocationDetails.length}`)
-         targetLocationDetails.forEach( name => {
-          console.log(`hiding ${name}`)
-          // ApexCharts.getChartByID("ReactApexChart")!!.hideSeries(name)
-         });
-         setTargetLocationDetails(targetLocationDetails)
-      })
+      }  catch (error) {
+        setMessage(`all field cannot be empty, series = ${series}, from = ${from?.toYYYMMDD()} to = ${to.toYYYMMDD()}, resolution = ${resolution}, level = ${level}`)
+        setValue("alert")        
+        console.error("Error accessing cache:", error);
+      }
     } else {
       setMessage(`all field cannot be empty, series = ${series}, from = ${from?.toYYYMMDD()} to = ${to.toYYYMMDD()}, resolution = ${resolution}, level = ${level}`)
       setValue("alert")
@@ -616,7 +640,13 @@ function App() {
                   <option value="NON-PROGRESSING">NON-PROGRESSING</option>
                   <option value="PROGRESSING">PROGRESSING</option>
                 </Form.Select>
-                      
+<Form.Check 
+    type="checkbox"
+    label="Use Cache"
+    checked={useCache}
+    onChange={(e) => setUseCache(e.target.checked)}
+    style={{ color: 'white' }} // Adjust based on your theme
+  />
                       <Button variant="outline-secondary" id="button-addon1" onClick={useHandleSubmit}>
                       {loading ? 'Loading…' : 'Send'}
                       </Button>
