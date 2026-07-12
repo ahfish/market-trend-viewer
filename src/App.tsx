@@ -148,7 +148,7 @@ function App() {
   const [useCache, setUseCache] = useState<boolean>(true);
   const [title,setTitle]=useState<string>("");
   const [value,setValue]=useState<string>("Series2Level0");
-  const [from,setFrom]=useState<Date>(new Date("2024-12-01"));
+  const [from,setFrom]=useState<Date>(new Date("2017-12-01"));
   const [to,setTo]=useState<Date>(() => {
   const date = new Date();
     date.setHours(0, 0, 0, 0);
@@ -156,7 +156,7 @@ function App() {
   });
   const [resolution,setResolution]=useState<string>("ONE_HOUR");
   const [symbol,setSymbol]=useState<string>("EURAUD");
-  const [level,setLevel]=useState<string>("90");
+  const [level,setLevel]=useState<string>("60");
   const [rangeMatchPercentile,setRangeMatchPercentile]=useState<string>("50");
   const [message,setMessage]=useState<string>("");
   let candleStick = <CandleStick series={series} width={[2,2,1]} title={title} ref={candleStickRef}></CandleStick> 
@@ -313,7 +313,7 @@ function App() {
       if ( urlTo === "NON-PROGRESSING" ) {
         url = `http://127.0.0.1:8081/trend/analyse/${symbol}/on/${resolution}/from/${from?.toYYYMMDD()}/to/${to?.toYYYMMDD()}/with/${level}/for/${requestTypeString}`
       }
-      const cacheKey = `data_${symbol}_${resolution}_${from?.toYYYMMDD()}_${to?.toYYYMMDD()}_${level}_${requestType}_${rangeMatchPercentile}_${urlTo}`;
+      const cacheKey = `data_${symbol}_${resolution}_${from?.toYYYMMDD()}_${level}_${requestType}_${rangeMatchPercentile}_${urlTo}`;
       const cachedData = await get<SeriesRawData>(cacheKey)
       try {
         if (cachedData && useCache) {
@@ -549,14 +549,14 @@ function App() {
         <Stack direction="horizontal" gap={5} className="App">
           <div>
               <Form.Control as="select" multiple value={requestType} onChange={handleRequestType}>
-                <option value="CANDLE_STICK" selected >CANDLE_STICK</option>
+                <option value="CANDLE_STICK" >CANDLE_STICK</option>
                 <option value="FIRST_LEVEL_TREND" selected >FIRST_LEVEL_TREND</option>
                 <option value="SECOND_LEVEL_TREND" selected >SECOND_LEVEL_TREND</option>
-                <option value="TARGET_LOCATION" selected >TARGET_LOCATION</option>
-                <option value="SIMPLE_TARGET_LOCATION" selected >SIMPLE_TARGET_LOCATION</option>
-                <option value="DOUBLE_POINT" selected >DOUBLE_POINT</option>
-                <option value="RANGE" selected >RANGE</option>
-                <option value="HIGHLIGHTED_TREND" selected >HIGHLIGHTED_TREND</option>
+                <option value="TARGET_LOCATION"  >TARGET_LOCATION</option>
+                <option value="SIMPLE_TARGET_LOCATION" >SIMPLE_TARGET_LOCATION</option>
+                <option value="DOUBLE_POINT" >DOUBLE_POINT</option>
+                <option value="RANGE"  >RANGE</option>
+                <option value="HIGHLIGHTED_TREND"  >HIGHLIGHTED_TREND</option>
             </Form.Control>       
           </div>
           <div>
